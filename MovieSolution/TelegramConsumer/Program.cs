@@ -47,15 +47,52 @@ namespace TelegramConsumer
                 case "/repo":
                     Bot.SendTextMessageAsync(message.Chat.Id, "https://github.com/korradif/heigmac");
                     break;
-                case "/getFilmByName":
-                    if (arguments.Count == 2)
+                case "/getMovieByName":
+                    if (arguments.Count >= 2)
                     {
-                        //FilmApi.Film.GetFilmByName(arguments[1]);
+                        //MovieApi.Movie.GetMovie("name", arguments[1]);
                     }
                     break;
-
+                case "/getMovieByCast":
+                    if (arguments.Count >= 2)
+                    {
+                        //MovieApi.Movie.GetMovie("cast", arguments[1]);
+                    }
+                    break;
+                case "/getMovieByCrew":
+                    if (arguments.Count >= 2)
+                    {
+                        //MovieApi.Movie.GetMovie("crew", arguments[1]);
+                    }
+                    break;
+                case "/getMovieByGenres":
+                    if (arguments.Count >= 2)
+                    {
+                        //MovieApi.Movie.GetMovie("genres", arguments[1]);
+                    }
+                    break;
+                case "getMovieByYear":
+                    if (arguments.Count >= 2)
+                    {
+                        //MovieApi.Movie.GetMovie("year", arguments[1]);
+                    }
+                    break;
+                case "getMovieByLanguage":
+                    if (arguments.Count >= 2)
+                    {
+                        //MovieApi.Movie.GetMovie("year", arguments[1]);
+                    }
+                    break;
+                case "/addFriend":
+                    if(arguments.Count == 2)
+                    {
+                        Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + arguments[1].Substring(1) + " as a friend to " + message.From.Username);
+                        //SocialAPI.AddFriend(message.From.Username, arguments[1].Substring(1));
+                    }
+                    break;
+                
                 // send inline keyboard
-                case "/inline":
+                case "/getMovie":
                     await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.Typing);
 
                     await Task.Delay(500); // simulate longer running task
@@ -64,13 +101,15 @@ namespace TelegramConsumer
                     {
                         new [] // first row
                         {
-                            InlineKeyboardButton.WithCallbackData("1.1"),
-                            InlineKeyboardButton.WithCallbackData("1.2"),
+                            InlineKeyboardButton.WithCallbackData("Name"),
+                            InlineKeyboardButton.WithCallbackData("Cast"),
+                            InlineKeyboardButton.WithCallbackData("Crew"),
                         },
                         new [] // second row
                         {
-                            InlineKeyboardButton.WithCallbackData("2.1"),
-                            InlineKeyboardButton.WithCallbackData("2.2"),
+                            InlineKeyboardButton.WithCallbackData("Genres"),
+                            InlineKeyboardButton.WithCallbackData("Year"),
+                            InlineKeyboardButton.WithCallbackData("Language"),
                         }
                     });
 
@@ -103,13 +142,13 @@ namespace TelegramConsumer
 
                     var fileName = file.Split(Path.DirectorySeparatorChar).Last();
 
-                    using (var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    /*using (var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         await Bot.SendPhotoAsync(
                             message.Chat.Id,
                             fileStream,
                             "Nice Picture");
-                    }
+                    }*/
                     break;
 
                 // request location or contact
@@ -130,7 +169,7 @@ namespace TelegramConsumer
                     const string usage = @"
 Usage:
 /author   - display author name
-/getFilmByName - get the film 
+/getMovieByName - get the Movie 
 /repo     - display the link to the repo
 /inline   - send inline keyboard
 /keyboard - send custom keyboard
@@ -151,7 +190,7 @@ Usage:
 
             await Bot.AnswerCallbackQueryAsync(
                 callbackQuery.Id,
-                $"Received {callbackQuery.Data}");
+                $"Received2 {callbackQuery.Data}");
 
             await Bot.SendTextMessageAsync(
                 callbackQuery.Message.Chat.Id,
