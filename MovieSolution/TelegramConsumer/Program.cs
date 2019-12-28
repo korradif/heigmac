@@ -71,13 +71,13 @@ namespace TelegramConsumer
                         //MovieApi.Movie.GetMovie("genres", arguments[1]);
                     }
                     break;
-                case "getMovieByYear":
+                case "/getMovieByYear":
                     if (arguments.Count >= 2)
                     {
                         //MovieApi.Movie.GetMovie("year", arguments[1]);
                     }
                     break;
-                case "getMovieByLanguage":
+                case "/getMovieByLanguage":
                     if (arguments.Count >= 2)
                     {
                         //MovieApi.Movie.GetMovie("year", arguments[1]);
