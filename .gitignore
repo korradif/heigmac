@@ -1,2 +1,4 @@
 *.class
 *.log
+/.vs
+/TestSolution/.vs/TestSolution/v16
