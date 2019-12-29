@@ -1,4 +1,5 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SocialResources;
 
 namespace TestSocialResources
 {
@@ -6,8 +7,9 @@ namespace TestSocialResources
     public class TestNeo4JDAO
     {
         [TestMethod]
-        public void TestMethod1()
+        public void TestConnect()
         {
+            Assert.IsTrue(true);
         }
     }
 }
