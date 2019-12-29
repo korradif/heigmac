@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace TelegramConsumer
     public static class Program
     {
         private static readonly TelegramBotClient Bot = new TelegramBotClient("1021492488:AAHzn9Sw4g8Ntyh8p7hr6GWA40nb0639sVU");
-
+        private static Dictionary<string, int> _filmsContext = new Dictionary<string, int>(); //([UserName, filmId])
         public static void Main()
         {
             var me = Bot.GetMeAsync().Result;
@@ -50,7 +51,15 @@ namespace TelegramConsumer
                 case "/getMovieByName":
                     if (arguments.Count >= 2)
                     {
-                        //MovieApi.Movie.GetMovie("name", arguments[1]);
+                        if (_filmsContext.TryGetValue(message.From.Username, out int value))
+                        {
+                            _filmsContext[message.From.Username] = 2; //TODO: replace id by result from getmovie
+                        }
+                        else
+                        {
+                            _filmsContext.Add(message.From.Username, 1); //TODO: replace id by result from getmovie
+                        }
+                        //int id = MovieApi.Movie.GetMovie("name", arguments[1]);
                     }
                     break;
                 case "/getMovieByCast":
@@ -84,13 +93,38 @@ namespace TelegramConsumer
                     }
                     break;
                 case "/addFriend":
-                    if(arguments.Count == 2)
+                    if (arguments.Count == 2)
                     {
                         Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + arguments[1].Substring(1) + " as a friend to " + message.From.Username);
                         //SocialAPI.AddFriend(message.From.Username, arguments[1].Substring(1));
                     }
                     break;
-                
+                case "/rate":
+                    _filmsContext.TryGetValue(message.From.Username, out int movieId);
+                    if (arguments.Count >= 2)
+                    {
+                        bool parsedSucessfully = Double.TryParse(arguments[1],out double rate);
+                        if (parsedSucessfully)
+                        {
+                            Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + rate + " as a comment to " + movieId.ToString() + " from user " + message.From.Username);
+                            //SocialAPI.AddRate(message.From.Username, movieId, rate);
+                        }
+                        else
+                        {
+                            Bot.SendTextMessageAsync(message.Chat.Id, "Please enter a valid rate");
+                        }
+                    }
+                    break;
+                case "/addComment":
+                    _filmsContext.TryGetValue(message.From.Username, out int id);
+                    string comment = "";
+                    for (int i = 1; i < arguments.Count; ++i) comment += arguments[i];
+                    Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + comment + " as a comment to " + id.ToString() + " from user " + message.From.Username);
+                    //SocialAPI.AddComment(message.From.Username, movieId, comment);
+                    break;
+                case "/Name":
+                    Bot.SendTextMessageAsync(message.Chat.Id,"test");
+                    break;
                 // send inline keyboard
                 case "/getMovie":
                     await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.Typing);
@@ -101,15 +135,15 @@ namespace TelegramConsumer
                     {
                         new [] // first row
                         {
-                            InlineKeyboardButton.WithCallbackData("Name"),
-                            InlineKeyboardButton.WithCallbackData("Cast"),
-                            InlineKeyboardButton.WithCallbackData("Crew"),
+                            InlineKeyboardButton.WithCallbackData("/Name"),
+                            InlineKeyboardButton.WithCallbackData("/Cast"),
+                            InlineKeyboardButton.WithCallbackData("/Crew"),
                         },
                         new [] // second row
                         {
-                            InlineKeyboardButton.WithCallbackData("Genres"),
-                            InlineKeyboardButton.WithCallbackData("Year"),
-                            InlineKeyboardButton.WithCallbackData("Language"),
+                            InlineKeyboardButton.WithCallbackData("/Genres"),
+                            InlineKeyboardButton.WithCallbackData("/Year"),
+                            InlineKeyboardButton.WithCallbackData("/Language"),
                         }
                     });
 
@@ -121,6 +155,7 @@ namespace TelegramConsumer
 
                 // send custom keyboard
                 case "/keyboard":
+                    
                     ReplyKeyboardMarkup ReplyKeyboard = new[]
                     {
                         new[] { "1.1", "1.2" },
@@ -131,7 +166,7 @@ namespace TelegramConsumer
                         message.Chat.Id,
                         "Choose",
                         replyMarkup: ReplyKeyboard);
-
+                    
                     break;
 
                 // send a photo
@@ -191,10 +226,9 @@ Usage:
             await Bot.AnswerCallbackQueryAsync(
                 callbackQuery.Id,
                 $"Received2 {callbackQuery.Data}");
-
             await Bot.SendTextMessageAsync(
                 callbackQuery.Message.Chat.Id,
-                $"Received {callbackQuery.Data}");
+                $"{callbackQuery.Data}");
         }
 
         private static async void BotOnInlineQueryReceived(object sender, InlineQueryEventArgs inlineQueryEventArgs)
