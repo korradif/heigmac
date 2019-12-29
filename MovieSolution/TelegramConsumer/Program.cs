@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MoviesGlobalResources;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace TelegramConsumer
     public static class Program
     {
         private static readonly TelegramBotClient Bot = new TelegramBotClient("1021492488:AAHzn9Sw4g8Ntyh8p7hr6GWA40nb0639sVU");
+        private static readonly MoviesGlobalResourcesController _moviesGlobalResCtl = new MoviesGlobalResourcesController();
 
         public static void Main()
         {
@@ -50,36 +52,42 @@ namespace TelegramConsumer
                 case "/getMovieByName":
                     if (arguments.Count >= 2)
                     {
-                        //MovieApi.Movie.GetMovie("name", arguments[1]);
+                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByName(arguments[1]));
+                        //MovieApi.Movie.GetMovie("name", arguments[1]);_mongoDBDAO
                     }
                     break;
                 case "/getMovieByCast":
                     if (arguments.Count >= 2)
                     {
+                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CAST, arguments[1]));
                         //MovieApi.Movie.GetMovie("cast", arguments[1]);
                     }
                     break;
                 case "/getMovieByCrew":
                     if (arguments.Count >= 2)
                     {
+                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CREW, arguments[1]));
                         //MovieApi.Movie.GetMovie("crew", arguments[1]);
                     }
                     break;
                 case "/getMovieByGenres":
                     if (arguments.Count >= 2)
                     {
+                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.GENRES, arguments[1]));
                         //MovieApi.Movie.GetMovie("genres", arguments[1]);
                     }
                     break;
                 case "/getMovieByYear":
                     if (arguments.Count >= 2)
                     {
+                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.YEAR, arguments[1]));
                         //MovieApi.Movie.GetMovie("year", arguments[1]);
                     }
                     break;
                 case "/getMovieByLanguage":
                     if (arguments.Count >= 2)
                     {
+                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.LANGUAGE, arguments[1]));
                         //MovieApi.Movie.GetMovie("year", arguments[1]);
                     }
                     break;

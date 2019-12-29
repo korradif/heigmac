@@ -18,7 +18,7 @@ namespace MoviesGlobalResources
             _movieCollection = _client.GetDatabase(_dbName).GetCollection<BsonDocument>(_collectionName);
         }
 
-        public BsonDocument GetFilm(int movieID)
+        public BsonDocument GetMovie(int movieID)
         {
             var builder = Builders<BsonDocument>.Filter;
             var filter = builder.Eq("id", movieID);
