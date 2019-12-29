@@ -1,4 +1,6 @@
 ﻿using MoviesGlobalResources;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +18,7 @@ namespace TelegramConsumer
     {
         private static readonly TelegramBotClient Bot = new TelegramBotClient("1021492488:AAHzn9Sw4g8Ntyh8p7hr6GWA40nb0639sVU");
         private static readonly MoviesGlobalResourcesController _moviesGlobalResCtl = new MoviesGlobalResourcesController();
-        private static Dictionary<string, int> _filmsContext = new Dictionary<string, int>(); //([UserName, filmId])
+        private static Dictionary<string, string> _filmsContext = new Dictionary<string, string>(); //([UserName, filmId])
         public static void Main()
         {
             var me = Bot.GetMeAsync().Result;
@@ -53,20 +55,58 @@ namespace TelegramConsumer
                 case "/getMovieByName":
                     if (arguments.Count >= 2)
                     {
-                        if (_filmsContext.TryGetValue(message.From.Username, out int value))
-                        {
-                            _filmsContext[message.From.Username] = 2; //TODO: replace id by result from getmovie
-                        }
-                        else
-                        {
-                            _filmsContext.Add(message.From.Username, 1); //TODO: replace id by result from getmovie
-                        }
+                       
                         //int id = MovieApi.Movie.GetMovie("name", arguments[1]);
 
-                        string jsonMovie = _moviesGlobalResCtl.GetMoviesByName(arguments[1]);
-                        Bot.SendTextMessageAsync(message.Chat.Id, jsonMovie.Substring(0, 10)); //displaying only the first 10 chars of the json. 
-                                                                                               //MovieApi.Movie.GetMovie("name", arguments[1]);_mongoDBDAO
+                        string rawJsonMovie = _moviesGlobalResCtl.GetMoviesByName(arguments[1]);
+                        JObject jsonMovie = JObject.Parse(rawJsonMovie);
+                        string pages = (string)jsonMovie.SelectToken("page");
+                        //Bot.SendTextMessageAsync(message.Chat.Id, jsonMovie.Substring(0, 10)); //displaying only the first 10 chars of the json. 
+                        //MovieApi.Movie.GetMovie("name", arguments[1]);_mongoDBDAO
+                        JArray results = (JArray)jsonMovie.SelectToken("results");
+                        foreach (JToken result in results)
+                        {
+                            string name = (string)result.SelectToken("original_title");
+                        }
+
+                        await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.Typing);
+
+                        //     await Task.Delay(500); // simulate longer running task
+
+                        List<List<InlineKeyboardButton>> keyboardButtonsLines = new List<List<InlineKeyboardButton>>();
+                        for (int i = 0; i < results.Count; ++i)
+                        {
+                            List<InlineKeyboardButton> row = new List<InlineKeyboardButton>();
+                            for (int j = 0; j < 3; ++j, ++i)
+                            {
+                                row.Add(InlineKeyboardButton.WithCallbackData((string)results[i].SelectToken("original_title")));
+                            }
+                            keyboardButtonsLines.Add(row);
+                        }
+                        var inlineKeyboard1 = new InlineKeyboardMarkup(keyboardButtonsLines);
+
+                        /*var inlineKeyboard1 = new InlineKeyboardMarkup(new[]
+                        {
+                            new [] // first row
+                            {
+                                InlineKeyboardButton.WithCallbackData("Name"),
+                                InlineKeyboardButton.WithCallbackData("Cast"),
+                                InlineKeyboardButton.WithCallbackData("Crew"),
+                            },
+                            new [] // second row
+                            {
+                                InlineKeyboardButton.WithCallbackData("Genres"),
+                                InlineKeyboardButton.WithCallbackData("Year"),
+                                InlineKeyboardButton.WithCallbackData("Language"),
+                            }
+                        });*/
+
+                        await Bot.SendTextMessageAsync(
+                            message.Chat.Id,
+                            "Choose",
+                            replyMarkup: inlineKeyboard1);
                     }
+
                     break;
                 case "/getMovieByCast":
                     if (arguments.Count >= 2)
@@ -111,13 +151,13 @@ namespace TelegramConsumer
                     }
                     break;
                 case "/rate":
-                    _filmsContext.TryGetValue(message.From.Username, out int movieId);
+                    _filmsContext.TryGetValue(message.From.Username, out string movieName);
                     if (arguments.Count >= 2)
                     {
-                        bool parsedSucessfully = Double.TryParse(arguments[1], out double rate);
+                        bool parsedSucessfully = Double.TryParse(arguments[1].Replace('.',','), out double rate);
                         if (parsedSucessfully)
                         {
-                            Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + rate + " as a comment to " + movieId.ToString() + " from user " + message.From.Username);
+                            Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + rate + " as a mark to " + movieName + " from user " + message.From.Username);
                             //SocialAPI.AddRate(message.From.Username, movieId, rate);
                         }
                         else
@@ -127,10 +167,10 @@ namespace TelegramConsumer
                     }
                     break;
                 case "/addComment":
-                    _filmsContext.TryGetValue(message.From.Username, out int id);
+                    _filmsContext.TryGetValue(message.From.Username, out string movieName2);
                     string comment = "";
                     for (int i = 1; i < arguments.Count; ++i) comment += arguments[i];
-                    Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + comment + " as a comment to " + id.ToString() + " from user " + message.From.Username);
+                    Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + comment + " as a comment to " + movieName2 + " from user " + message.From.Username);
                     //SocialAPI.AddComment(message.From.Username, movieId, comment);
                     break;
                 case "/Name":
@@ -235,7 +275,17 @@ Usage:
 
             await Bot.AnswerCallbackQueryAsync(
                 callbackQuery.Id,
-                $"Received2 {callbackQuery.Data}");
+                $"Selected {callbackQuery.Data}");
+            string username = callbackQuery.From.Username;
+            
+            if (_filmsContext.TryGetValue(username, out string value))
+            {
+                _filmsContext[username] = callbackQuery.Data; //TODO: replace id by result from getmovie
+            }
+            else
+            {
+                _filmsContext.Add(username, callbackQuery.Data); //TODO: replace id by result from getmovie
+            }
             await Bot.SendTextMessageAsync(
                 callbackQuery.Message.Chat.Id,
                 $"{callbackQuery.Data}");
