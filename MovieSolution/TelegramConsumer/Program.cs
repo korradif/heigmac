@@ -260,31 +260,7 @@ namespace TelegramConsumer
                     {
                         case Step.InputFilterValue:
                             session.FilterValue = arguments[0].Substring(1);
-                            session.Step = Step.SelectMovie;
-                            string rawJsonMovie="";
-                            switch (session.Filter)
-                            {
-                                case "Name":
-                                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByName(session.FilterValue);
-                                    break;
-                                case "Cast":
-                                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CAST,session.FilterValue);
-                                    break;
-                                case "Crew":
-                                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CREW, session.FilterValue);
-                                    break;
-                                case "Genres":
-                                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.GENRES, session.FilterValue);
-                                    break;
-                                case "Year":
-                                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.YEAR, session.FilterValue);
-                                    break;
-                                case "Language":
-                                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.LANGUAGE, session.FilterValue);
-                                    break;
-                            }
-                            displayMovieResultAsync(rawJsonMovie, session);
-                            session.Step = Step.SelectMovie;
+                            displayFilteredMovies(session);
                             break;
                         case Step.CommentMovie:
                             string comment2 = arguments[0].Substring(1);
@@ -328,20 +304,39 @@ Usage:
             }
         }
 
-        private static async Task getMovieByNameAsync(UserSession session)
+        private static void displayFilteredMovies(UserSession session)
         {
-             
+            session.Step = Step.SelectMovie;
+            string rawJsonMovie = "";
+            switch (session.Filter)
+            {
+                case "Name":
+                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByName(session.FilterValue);
+                    break;
+                case "Cast":
+                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CAST, session.FilterValue);
+                    break;
+                case "Crew":
+                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CREW, session.FilterValue);
+                    break;
+                case "Genres":
+                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.GENRES, session.FilterValue);
+                    break;
+                case "Year":
+                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.YEAR, session.FilterValue);
+                    break;
+                case "Language":
+                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.LANGUAGE, session.FilterValue);
+                    break;
+            }
+            displayJsonResultForChoiceAsync(rawJsonMovie, session, "original_title");
+            session.Step = Step.SelectMovie;
         }
-
-        private static async Task displayMovieResultAsync(string rawJsonMovie,UserSession session)
+        private static async Task displayJsonResultForChoiceAsync(string rawJsonMovie, UserSession session,string fieldToDisplay)
         {
             JObject jsonMovie = JObject.Parse(rawJsonMovie);
             JArray results = (JArray)jsonMovie.SelectToken("results");
-            foreach (JToken result in results)
-            {
-                string name = (string)result.SelectToken("original_title");
-            }
-
+     
             await Bot.SendChatActionAsync(session.Message.Chat.Id, ChatAction.Typing);
 
             //     await Task.Delay(500); // simulate longer running task
@@ -352,7 +347,7 @@ Usage:
                 List<InlineKeyboardButton> row = new List<InlineKeyboardButton>();
                 for (int j = 0; j < 3; ++j, ++i)
                 {
-                    row.Add(InlineKeyboardButton.WithCallbackData((string)results[i].SelectToken("original_title")));
+                    row.Add(InlineKeyboardButton.WithCallbackData((string)results[i].SelectToken(fieldToDisplay)));
                 }
                 keyboardButtonsLines.Add(row);
             }
@@ -379,9 +374,20 @@ Usage:
             {
                 switch (session.Step)
                 {
+                    case Step.ChooseGenre:
+                        session.FilterValue = getGenreId(callbackQuery.Data);
+                        break;
                     case Step.ChooseFilter:
                         session.Filter = callbackQuery.Data;
-                        session.Step = Step.InputFilterValue;
+                        if (session.Filter == "Genres")
+                        {
+                            getGenres(session);
+                            session.Step = Step.ChooseGenre;
+                        }
+                        else
+                        {
+                            session.Step = Step.InputFilterValue;
+                        }
                         break;
                     case Step.SelectMovie:
                         session.SelectedMovie = callbackQuery.Data;
@@ -408,20 +414,33 @@ Usage:
 
                 }
             }
-            else
-            {
-                if (_moviesContext.TryGetValue(username, out string value))
-                {
-                    _moviesContext[username] = callbackQuery.Data; //TODO: replace id by result from getmovie
-                }
-                else
-                {
-                    _moviesContext.Add(username, callbackQuery.Data); //TODO: replace id by result from getmovie
-                }
-            }
+            //else
+            //{
+            //    if (_moviesContext.TryGetValue(username, out string value))
+            //    {
+            //        _moviesContext[username] = callbackQuery.Data;
+            //    }
+            //    else
+            //    {
+            //        _moviesContext.Add(username, callbackQuery.Data);
+            //    }
+            //}
             await Bot.SendTextMessageAsync(
                 callbackQuery.Message.Chat.Id,
                 $"{callbackQuery.Data}");
+        }
+
+        private static string getGenreId(string data)
+        {
+            return _moviesGlobalResCtl.GetMovieGenreIdByName(data);
+        }
+
+        private static void getGenres(UserSession session)
+        {
+            string rawJsonMovie = _moviesGlobalResCtl.GetMovieGenres();
+
+            displayJsonResultForChoiceAsync(rawJsonMovie, session, "name");
+            
         }
 
         private static async Task getMovieActionChoiceAsync(UserSession session)
@@ -431,8 +450,6 @@ Usage:
             //Rate
             await Bot.SendChatActionAsync(session.Message.Chat.Id, ChatAction.Typing);
 
-
-            await Task.Delay(500); // simulate longer running task
             session.Step = Step.ChooseMovieAction;
             var inlineKeyboard = new InlineKeyboardMarkup(new[]
             {

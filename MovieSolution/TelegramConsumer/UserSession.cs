@@ -13,7 +13,8 @@ namespace TelegramConsumer
         SelectMovie,
         ChooseMovieAction,
         CommentMovie,
-        RateMovie
+        RateMovie,
+        ChooseGenre
     }
     public class UserSession
     {

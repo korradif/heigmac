@@ -51,5 +51,17 @@ namespace MoviesGlobalResources
             _cachedRequests[req].Add(value);
         }
 
+        public string GetMovieGenres()
+        {
+            //TODO return the available genres in a string if possible formatted as follow:
+            string result = "{\"page\":1\"results\":[{\"name\":\"salut\",\"desc\":\"salut\"},{\"name\":\"nametwo\",\"desc\":\"salut\"}]}";
+            return result;
+        }
+
+        public string GetMovieGenreIdByName(string genreName)
+        {
+            //TODO return the id of the genre from it's name
+            return "2";
+        }
     }
 }
