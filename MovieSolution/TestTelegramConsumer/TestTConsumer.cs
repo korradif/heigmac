@@ -15,9 +15,9 @@ namespace TestTelegramConsumer
             //Assert.AreEqual(Config.TelegramBotToken, client.TelegramBotToken);
         }
         [TestMethod]
-        public void TestGetAuthors()
+        public void TestGetMovie()
         {
-         
+            
         }
     }
 }
