@@ -79,7 +79,7 @@ namespace TelegramConsumer
                         //     await Task.Delay(500); // simulate longer running task
 
                         List<List<InlineKeyboardButton>> keyboardButtonsLines = new List<List<InlineKeyboardButton>>();
-                        for (int i = 0; i < results.Count; ++i)
+                        for (int i = 0; i < results.Count; )
                         {
                             List<InlineKeyboardButton> row = new List<InlineKeyboardButton>();
                             for (int j = 0; j < 3; ++j, ++i)
@@ -89,22 +89,6 @@ namespace TelegramConsumer
                             keyboardButtonsLines.Add(row);
                         }
                         var inlineKeyboard1 = new InlineKeyboardMarkup(keyboardButtonsLines);
-
-                        /*var inlineKeyboard1 = new InlineKeyboardMarkup(new[]
-                        {
-                            new [] // first row
-                            {
-                                InlineKeyboardButton.WithCallbackData("Name"),
-                                InlineKeyboardButton.WithCallbackData("Cast"),
-                                InlineKeyboardButton.WithCallbackData("Crew"),
-                            },
-                            new [] // second row
-                            {
-                                InlineKeyboardButton.WithCallbackData("Genres"),
-                                InlineKeyboardButton.WithCallbackData("Year"),
-                                InlineKeyboardButton.WithCallbackData("Language"),
-                            }
-                        });*/
 
                         await Bot.SendTextMessageAsync(
                             message.Chat.Id,
@@ -332,11 +316,11 @@ Usage:
             displayJsonResultForChoiceAsync(rawJsonMovie, session, "original_title");
             session.Step = Step.SelectMovie;
         }
-        private static async Task displayJsonResultForChoiceAsync(string rawJsonMovie, UserSession session,string fieldToDisplay)
+        private static async Task displayJsonResultForChoiceAsync(string rawJsonMovie, UserSession session, string fieldToDisplay)
         {
             JObject jsonMovie = JObject.Parse(rawJsonMovie);
             JArray results = (JArray)jsonMovie.SelectToken("results");
-     
+
             await Bot.SendChatActionAsync(session.Message.Chat.Id, ChatAction.Typing);
 
             //     await Task.Delay(500); // simulate longer running task
@@ -375,13 +359,14 @@ Usage:
                 switch (session.Step)
                 {
                     case Step.ChooseGenre:
-                        session.FilterValue = getGenreId(callbackQuery.Data);
+                        session.FilterValue = getGenreId(callbackQuery.Data).ToString();
+                        displayFilteredMovies(session);
                         break;
                     case Step.ChooseFilter:
                         session.Filter = callbackQuery.Data;
                         if (session.Filter == "Genres")
                         {
-                            getGenres(session);
+                            getGenresAsync(session);
                             session.Step = Step.ChooseGenre;
                         }
                         else
@@ -430,17 +415,35 @@ Usage:
                 $"{callbackQuery.Data}");
         }
 
-        private static string getGenreId(string data)
+        private static int getGenreId(string data)
         {
             return _moviesGlobalResCtl.GetMovieGenreIdByName(data);
         }
 
-        private static void getGenres(UserSession session)
+        private static async Task getGenresAsync(UserSession session)
         {
-            string rawJsonMovie = _moviesGlobalResCtl.GetMovieGenres();
+            await Bot.SendChatActionAsync(session.Message.Chat.Id, ChatAction.Typing);
+            var genres = _moviesGlobalResCtl.GetMovieGenres();
+            //     await Task.Delay(500); // simulate longer running task
 
-            displayJsonResultForChoiceAsync(rawJsonMovie, session, "name");
-            
+            List<List<InlineKeyboardButton>> keyboardButtonsLines = new List<List<InlineKeyboardButton>>();
+            for (int i = 0; i < genres.Count;)
+            {
+                List<InlineKeyboardButton> row = new List<InlineKeyboardButton>();
+                for (int j = 0; j < 3 && i<genres.Count; ++j, ++i)
+                {
+                    row.Add(genres.ElementAt(i).Key);
+                }
+                keyboardButtonsLines.Add(row);
+            }
+            var inlineKeyboard = new InlineKeyboardMarkup(keyboardButtonsLines);
+
+
+            await Bot.SendTextMessageAsync(
+                session.Message.Chat.Id,
+                "Choose",
+                replyMarkup: inlineKeyboard);
+            //session.Step = Step.SelectMovie;
         }
 
         private static async Task getMovieActionChoiceAsync(UserSession session)

@@ -11,6 +11,7 @@ namespace MoviesGlobalResources
         private readonly TMDBDAO _globalMoviesDAO = new TMDBDAO();
 
         private readonly Dictionary<Request, List<string>> _cachedRequests = new Dictionary<Request, List<string>>();
+        private Dictionary<string, int> _moviesGenres;
 
         public MoviesGlobalResourcesController()
         {
@@ -51,17 +52,28 @@ namespace MoviesGlobalResources
             _cachedRequests[req].Add(value);
         }
 
-        public string GetMovieGenres()
+        public Dictionary<string,int> GetMovieGenres()
         {
             //TODO return the available genres in a string if possible formatted as follow:
-            string result = "{\"page\":1\"results\":[{\"name\":\"salut\",\"desc\":\"salut\"},{\"name\":\"nametwo\",\"desc\":\"salut\"}]}";
-            return result;
+            if (_moviesGenres is null)
+            {
+                _moviesGenres = new Dictionary<string, int>();
+                //TODO: query and parse into dictionary this this https://api.themoviedb.org/3/genre/movie/list?api_key=dca39aa4da3c154aa1c1b0d293e9ba5b&language=en-US
+                _moviesGenres.Add("Action",28 );
+                _moviesGenres.Add("Adventure",12);
+                _moviesGenres.Add("Horror", 27);
+                _moviesGenres.Add("History", 36);
+            }
+
+            return _moviesGenres;
         }
 
-        public string GetMovieGenreIdByName(string genreName)
+        public int GetMovieGenreIdByName(string genreName)
         {
+            int id = 0;
             //TODO return the id of the genre from it's name
-            return "2";
+            _moviesGenres.TryGetValue(genreName,out id);
+            return id;
         }
     }
 }
