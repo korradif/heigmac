@@ -1,6 +1,7 @@
 ﻿using MoviesGlobalResources;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SocialResources;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,6 +21,8 @@ namespace TelegramConsumer
         private static readonly MoviesGlobalResourcesController _moviesGlobalResCtl = new MoviesGlobalResourcesController();
         private static Dictionary<string, string> _moviesContext = new Dictionary<string, string>(); //([UserName, movieId])
         private static Dictionary<string, UserSession> _userSessions = new Dictionary<string, UserSession>();
+        private static MovieController _movieController = new MovieController();
+
         public static void Main()
         {
             var me = Bot.GetMeAsync().Result;
@@ -135,7 +138,7 @@ namespace TelegramConsumer
                     if (arguments.Count == 2)
                     {
                         Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + arguments[1].Substring(1) + " as a friend to " + message.From.Username);
-                        //SocialAPI.AddFriend(message.From.Username, arguments[1].Substring(1));
+                        _movieController.AddFriend(message.From.Username, arguments[1].Substring(1));
                     }
                     break;
                 case "/rate":
@@ -146,7 +149,7 @@ namespace TelegramConsumer
                         if (parsedSucessfully)
                         {
                             Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + rate + " as a mark to " + movieName + " from user " + message.From.Username);
-                            //SocialAPI.AddRate(message.From.Username, movieId, rate);
+                            _movieController.AddRate(message.From.Username, movieName, rate);
                         }
                         else
                         {
@@ -159,7 +162,7 @@ namespace TelegramConsumer
                     string comment = "";
                     for (int i = 1; i < arguments.Count; ++i) comment += arguments[i];
                     Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + comment + " as a comment to " + movieName2 + " from user " + message.From.Username);
-                    //SocialAPI.AddComment(message.From.Username, movieId, comment);
+                    _movieController.AddComment(message.From.Username, movieName2, comment);
                     break;
                 case "/Name":
                     Bot.SendTextMessageAsync(message.Chat.Id, message.Chat.Username);
