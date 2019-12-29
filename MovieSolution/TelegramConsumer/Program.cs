@@ -1,6 +1,7 @@
 ﻿using MoviesGlobalResources;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SocialResources;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +20,9 @@ namespace TelegramConsumer
         private static readonly TelegramBotClient Bot = new TelegramBotClient("1021492488:AAHzn9Sw4g8Ntyh8p7hr6GWA40nb0639sVU");
         private static readonly MoviesGlobalResourcesController _moviesGlobalResCtl = new MoviesGlobalResourcesController();
         private static Dictionary<string, string> _moviesContext = new Dictionary<string, string>(); //([UserName, movieId])
+        private static Dictionary<string, UserSession> _userSessions = new Dictionary<string, UserSession>();
+        private static MovieController _movieController = new MovieController();
+
         public static void Main()
         {
             var me = Bot.GetMeAsync().Result;
@@ -41,7 +45,14 @@ namespace TelegramConsumer
         {
 
             var message = messageEventArgs.Message;
-
+            string username = message.From.Username;
+            UserSession session;
+            if (!_userSessions.TryGetValue(username, out session))
+            {
+                session = new UserSession(username);
+                _userSessions.Add(username, session);
+            }
+            session.Message = message;
             if (message == null || message.Type != MessageType.Text) return;
             var arguments = message.Text.Split(' ').ToList();
             switch (arguments.First())
@@ -55,14 +66,11 @@ namespace TelegramConsumer
                 case "/getMovieByName":
                     if (arguments.Count >= 2)
                     {
-                       
+
                         //int id = MovieApi.Movie.GetMovie("name", arguments[1]);
 
                         string rawJsonMovie = _moviesGlobalResCtl.GetMoviesByName(arguments[1]);
                         JObject jsonMovie = JObject.Parse(rawJsonMovie);
-                        string pages = (string)jsonMovie.SelectToken("page");
-                        //Bot.SendTextMessageAsync(message.Chat.Id, jsonMovie.Substring(0, 10)); //displaying only the first 10 chars of the json. 
-                        //MovieApi.Movie.GetMovie("name", arguments[1]);_mongoDBDAO
                         JArray results = (JArray)jsonMovie.SelectToken("results");
                         foreach (JToken result in results)
                         {
@@ -74,7 +82,7 @@ namespace TelegramConsumer
                         //     await Task.Delay(500); // simulate longer running task
 
                         List<List<InlineKeyboardButton>> keyboardButtonsLines = new List<List<InlineKeyboardButton>>();
-                        for (int i = 0; i < results.Count; ++i)
+                        for (int i = 0; i < results.Count; )
                         {
                             List<InlineKeyboardButton> row = new List<InlineKeyboardButton>();
                             for (int j = 0; j < 3; ++j, ++i)
@@ -85,28 +93,11 @@ namespace TelegramConsumer
                         }
                         var inlineKeyboard1 = new InlineKeyboardMarkup(keyboardButtonsLines);
 
-                        /*var inlineKeyboard1 = new InlineKeyboardMarkup(new[]
-                        {
-                            new [] // first row
-                            {
-                                InlineKeyboardButton.WithCallbackData("Name"),
-                                InlineKeyboardButton.WithCallbackData("Cast"),
-                                InlineKeyboardButton.WithCallbackData("Crew"),
-                            },
-                            new [] // second row
-                            {
-                                InlineKeyboardButton.WithCallbackData("Genres"),
-                                InlineKeyboardButton.WithCallbackData("Year"),
-                                InlineKeyboardButton.WithCallbackData("Language"),
-                            }
-                        });*/
-
                         await Bot.SendTextMessageAsync(
                             message.Chat.Id,
                             "Choose",
                             replyMarkup: inlineKeyboard1);
                     }
-
                     break;
                 case "/getMovieByCast":
                     if (arguments.Count >= 2)
@@ -147,18 +138,18 @@ namespace TelegramConsumer
                     if (arguments.Count == 2)
                     {
                         Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + arguments[1].Substring(1) + " as a friend to " + message.From.Username);
-                        //SocialAPI.AddFriend(message.From.Username, arguments[1].Substring(1));
+                        _movieController.AddFriend(message.From.Username, arguments[1].Substring(1));
                     }
                     break;
                 case "/rate":
                     _moviesContext.TryGetValue(message.From.Username, out string movieName);
                     if (arguments.Count >= 2)
                     {
-                        bool parsedSucessfully = Double.TryParse(arguments[1].Replace('.',','), out double rate);
+                        bool parsedSucessfully = Double.TryParse(arguments[1].Replace('.', ','), out double rate);
                         if (parsedSucessfully)
                         {
                             Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + rate + " as a mark to " + movieName + " from user " + message.From.Username);
-                            //SocialAPI.AddRate(message.From.Username, movieId, rate);
+                            _movieController.AddRate(message.From.Username, movieName, rate);
                         }
                         else
                         {
@@ -171,17 +162,18 @@ namespace TelegramConsumer
                     string comment = "";
                     for (int i = 1; i < arguments.Count; ++i) comment += arguments[i];
                     Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + comment + " as a comment to " + movieName2 + " from user " + message.From.Username);
-                    //SocialAPI.AddComment(message.From.Username, movieId, comment);
+                    _movieController.AddComment(message.From.Username, movieName2, comment);
                     break;
                 case "/Name":
-                    Bot.SendTextMessageAsync(message.Chat.Id, "test");
+                    Bot.SendTextMessageAsync(message.Chat.Id, message.Chat.Username);
                     break;
                 // send inline keyboard
                 case "/getMovie":
                     await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.Typing);
 
-                    await Task.Delay(500); // simulate longer running task
 
+                    await Task.Delay(500); // simulate longer running task
+                    session.Step = Step.ChooseFilter;
                     var inlineKeyboard = new InlineKeyboardMarkup(new[]
                     {
                         new [] // first row
@@ -251,7 +243,34 @@ namespace TelegramConsumer
                     break;
 
                 default:
-                    const string usage = @"
+                    switch (session.Step)
+                    {
+                        case Step.InputFilterValue:
+                            session.FilterValue = arguments[0].Substring(1);
+                            displayFilteredMovies(session);
+                            break;
+                        case Step.CommentMovie:
+                            string comment2 = arguments[0].Substring(1);
+                            for (int i = 1; i < arguments.Count; ++i) comment2 += " " + arguments[i];
+                            Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + comment2 + " as a comment to " + session.SelectedMovie + " from user " + message.From.Username);
+                            //SocialAPI.AddComment(message.From.Username, movieId, comment);
+                            session.Step = Step.Default;
+                            break;
+                        case Step.RateMovie:
+                            bool parsedSucessfully = Double.TryParse(arguments[0].Substring(1).Replace('.', ','), out double rate);
+                            if (parsedSucessfully)
+                            {
+                                Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + rate + " as a mark to " + session.SelectedMovie + " from user " + message.From.Username);
+                                //SocialAPI.AddRate(message.From.Username, movieId, rate);
+                                session.Step = Step.Default;
+                            }
+                            else
+                            {
+                                Bot.SendTextMessageAsync(message.Chat.Id, "Please enter a valid rate");
+                            }
+                            break;
+                        default:
+                            const string usage = @"
 Usage:
 /author   - display author name
 /getMovieByName - get the Movie 
@@ -261,12 +280,72 @@ Usage:
 /photo    - send a photo
 /request  - request location or contact";
 
-                    await Bot.SendTextMessageAsync(
-                        message.Chat.Id,
-                        usage,
-                        replyMarkup: new ReplyKeyboardRemove());
+                            await Bot.SendTextMessageAsync(
+                                message.Chat.Id,
+                                usage,
+                                replyMarkup: new ReplyKeyboardRemove());
+                            break;
+                    }
+                    break;
+
+            }
+        }
+
+        private static void displayFilteredMovies(UserSession session)
+        {
+            session.Step = Step.SelectMovie;
+            string rawJsonMovie = "";
+            switch (session.Filter)
+            {
+                case "Name":
+                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByName(session.FilterValue);
+                    break;
+                case "Cast":
+                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CAST, session.FilterValue);
+                    break;
+                case "Crew":
+                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CREW, session.FilterValue);
+                    break;
+                case "Genres":
+                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.GENRES, session.FilterValue);
+                    break;
+                case "Year":
+                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.YEAR, session.FilterValue);
+                    break;
+                case "Language":
+                    rawJsonMovie = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.LANGUAGE, session.FilterValue);
                     break;
             }
+            displayJsonResultForChoiceAsync(rawJsonMovie, session, "original_title");
+            session.Step = Step.SelectMovie;
+        }
+        private static async Task displayJsonResultForChoiceAsync(string rawJsonMovie, UserSession session, string fieldToDisplay)
+        {
+            JObject jsonMovie = JObject.Parse(rawJsonMovie);
+            JArray results = (JArray)jsonMovie.SelectToken("results");
+
+            await Bot.SendChatActionAsync(session.Message.Chat.Id, ChatAction.Typing);
+
+            //     await Task.Delay(500); // simulate longer running task
+
+            List<List<InlineKeyboardButton>> keyboardButtonsLines = new List<List<InlineKeyboardButton>>();
+            for (int i = 0; i < results.Count; ++i)
+            {
+                List<InlineKeyboardButton> row = new List<InlineKeyboardButton>();
+                for (int j = 0; j < 3; ++j, ++i)
+                {
+                    row.Add(InlineKeyboardButton.WithCallbackData((string)results[i].SelectToken(fieldToDisplay)));
+                }
+                keyboardButtonsLines.Add(row);
+            }
+            var inlineKeyboard1 = new InlineKeyboardMarkup(keyboardButtonsLines);
+
+
+            await Bot.SendTextMessageAsync(
+                session.Message.Chat.Id,
+                "Choose",
+                replyMarkup: inlineKeyboard1);
+
         }
 
         private static async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEventArgs)
@@ -277,18 +356,121 @@ Usage:
                 callbackQuery.Id,
                 $"Selected {callbackQuery.Data}");
             string username = callbackQuery.From.Username;
-            
-            if (_moviesContext.TryGetValue(username, out string value))
+            UserSession session;
+            if (_userSessions.TryGetValue(username, out session))
             {
-                _moviesContext[username] = callbackQuery.Data; //TODO: replace id by result from getmovie
+                switch (session.Step)
+                {
+                    case Step.ChooseGenre:
+                        session.FilterValue = getGenreId(callbackQuery.Data).ToString();
+                        displayFilteredMovies(session);
+                        break;
+                    case Step.ChooseFilter:
+                        session.Filter = callbackQuery.Data;
+                        if (session.Filter == "Genres")
+                        {
+                            getGenresAsync(session);
+                            session.Step = Step.ChooseGenre;
+                        }
+                        else
+                        {
+                            session.Step = Step.InputFilterValue;
+                        }
+                        break;
+                    case Step.SelectMovie:
+                        session.SelectedMovie = callbackQuery.Data;
+                        session.Step = Step.ChooseMovieAction;
+                        getMovieActionChoiceAsync(session);
+                        break;
+                    case Step.ChooseMovieAction:
+                        switch (callbackQuery.Data)
+                        {
+                            case "Add to WatchList":
+                                //SocialAPI.AddToWatchList(message.From.Username, movieId);
+                                break;
+                            case "Comment":
+                                //Comment
+                                session.Step = Step.CommentMovie;
+                                break;
+                            case "Rate":
+                                //rate
+                                session.Step = Step.RateMovie;
+                                break;
+                        }
+                        break;
+
+
+                }
             }
-            else
-            {
-                _moviesContext.Add(username, callbackQuery.Data); //TODO: replace id by result from getmovie
-            }
+            //else
+            //{
+            //    if (_moviesContext.TryGetValue(username, out string value))
+            //    {
+            //        _moviesContext[username] = callbackQuery.Data;
+            //    }
+            //    else
+            //    {
+            //        _moviesContext.Add(username, callbackQuery.Data);
+            //    }
+            //}
             await Bot.SendTextMessageAsync(
                 callbackQuery.Message.Chat.Id,
                 $"{callbackQuery.Data}");
+        }
+
+        private static int getGenreId(string data)
+        {
+            return _moviesGlobalResCtl.GetMovieGenreIdByName(data);
+        }
+
+        private static async Task getGenresAsync(UserSession session)
+        {
+            await Bot.SendChatActionAsync(session.Message.Chat.Id, ChatAction.Typing);
+            var genres = _moviesGlobalResCtl.GetMovieGenres();
+            //     await Task.Delay(500); // simulate longer running task
+
+            List<List<InlineKeyboardButton>> keyboardButtonsLines = new List<List<InlineKeyboardButton>>();
+            for (int i = 0; i < genres.Count;)
+            {
+                List<InlineKeyboardButton> row = new List<InlineKeyboardButton>();
+                for (int j = 0; j < 3 && i<genres.Count; ++j, ++i)
+                {
+                    row.Add(genres.ElementAt(i).Key);
+                }
+                keyboardButtonsLines.Add(row);
+            }
+            var inlineKeyboard = new InlineKeyboardMarkup(keyboardButtonsLines);
+
+
+            await Bot.SendTextMessageAsync(
+                session.Message.Chat.Id,
+                "Choose",
+                replyMarkup: inlineKeyboard);
+            //session.Step = Step.SelectMovie;
+        }
+
+        private static async Task getMovieActionChoiceAsync(UserSession session)
+        {
+            //AddToWatchList
+            //Comment
+            //Rate
+            await Bot.SendChatActionAsync(session.Message.Chat.Id, ChatAction.Typing);
+
+            session.Step = Step.ChooseMovieAction;
+            var inlineKeyboard = new InlineKeyboardMarkup(new[]
+            {
+                    new [] // first row
+                    {
+                        InlineKeyboardButton.WithCallbackData("Add to WatchList"),
+                        InlineKeyboardButton.WithCallbackData("Comment"),
+                        InlineKeyboardButton.WithCallbackData("Rate")
+                    }
+                });
+
+            await Bot.SendTextMessageAsync(
+                session.Message.Chat.Id,
+                "Choose",
+                replyMarkup: inlineKeyboard);
         }
 
         private static async void BotOnInlineQueryReceived(object sender, InlineQueryEventArgs inlineQueryEventArgs)

@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MoviesGlobalResources\MoviesGlobalResources.csproj" />
+    <ProjectReference Include="..\SocialResources\SocialResources.csproj" />
     <ProjectReference Include="..\Telegram.Bot.Examples.DotNetCoreWebHook\Telegram.Bot.Examples.DotNetCoreWebHook.csproj" />
   </ItemGroup>
 
