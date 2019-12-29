@@ -18,7 +18,7 @@ namespace TelegramConsumer
     {
         private static readonly TelegramBotClient Bot = new TelegramBotClient("1021492488:AAHzn9Sw4g8Ntyh8p7hr6GWA40nb0639sVU");
         private static readonly MoviesGlobalResourcesController _moviesGlobalResCtl = new MoviesGlobalResourcesController();
-        private static Dictionary<string, string> _filmsContext = new Dictionary<string, string>(); //([UserName, filmId])
+        private static Dictionary<string, string> _moviesContext = new Dictionary<string, string>(); //([UserName, movieId])
         public static void Main()
         {
             var me = Bot.GetMeAsync().Result;
@@ -151,7 +151,7 @@ namespace TelegramConsumer
                     }
                     break;
                 case "/rate":
-                    _filmsContext.TryGetValue(message.From.Username, out string movieName);
+                    _moviesContext.TryGetValue(message.From.Username, out string movieName);
                     if (arguments.Count >= 2)
                     {
                         bool parsedSucessfully = Double.TryParse(arguments[1].Replace('.',','), out double rate);
@@ -167,7 +167,7 @@ namespace TelegramConsumer
                     }
                     break;
                 case "/addComment":
-                    _filmsContext.TryGetValue(message.From.Username, out string movieName2);
+                    _moviesContext.TryGetValue(message.From.Username, out string movieName2);
                     string comment = "";
                     for (int i = 1; i < arguments.Count; ++i) comment += arguments[i];
                     Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + comment + " as a comment to " + movieName2 + " from user " + message.From.Username);
@@ -278,13 +278,13 @@ Usage:
                 $"Selected {callbackQuery.Data}");
             string username = callbackQuery.From.Username;
             
-            if (_filmsContext.TryGetValue(username, out string value))
+            if (_moviesContext.TryGetValue(username, out string value))
             {
-                _filmsContext[username] = callbackQuery.Data; //TODO: replace id by result from getmovie
+                _moviesContext[username] = callbackQuery.Data; //TODO: replace id by result from getmovie
             }
             else
             {
-                _filmsContext.Add(username, callbackQuery.Data); //TODO: replace id by result from getmovie
+                _moviesContext.Add(username, callbackQuery.Data); //TODO: replace id by result from getmovie
             }
             await Bot.SendTextMessageAsync(
                 callbackQuery.Message.Chat.Id,
