@@ -52,6 +52,10 @@ namespace SocialResources
             }
         }
 
+        internal void UserCommentsMovie(string username, string movieName, string comment)
+        {
+            throw new NotImplementedException();
+        }
         public void UserRatesMovie(long tId, long mId, double rating)
         {
             using (var session = _driver.Session())
@@ -63,6 +67,11 @@ namespace SocialResources
             }
         }
 
+        internal void UserRatesMovie(string username, string movieName, double rate)
+        {
+            throw new NotImplementedException();
+        }
+
         internal bool UserExists(string username)
         {
             throw new NotImplementedException();
@@ -72,10 +81,7 @@ namespace SocialResources
             throw new NotImplementedException();
         }
 
-        internal void UserRatesMovie(string username, string movieName, double rate)
-        {
-            throw new NotImplementedException();
-        }
+  
 
         internal void UserIsFriendWith(string username, string friendUsername)
         {

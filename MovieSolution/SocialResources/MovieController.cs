@@ -61,7 +61,13 @@ namespace SocialResources
             }
             
         }
-
+        public void AddComment(string username, string movieName, string comment)
+        {
+            if (ensureUserExists(username) && ensureMovieExists(movieName))
+            {
+                _neo4JDAO.UserCommentsMovie(username, movieName, comment);
+            }
+        }
         private bool ensureUserExists(string username)
         {
             if (!_neo4JDAO.UserExists(username))
@@ -79,9 +85,6 @@ namespace SocialResources
             return true;
         }
 
-        public void AddComment(string username, string movieName, string comment)
-        {
-            throw new NotImplementedException();
-        }
+      
     }
 }
