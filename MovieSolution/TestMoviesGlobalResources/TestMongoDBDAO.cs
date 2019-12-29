@@ -15,9 +15,9 @@ namespace TestMoviesGlobalResources
         }
 
         [TestMethod]
-        public void TestGetFilm()
+        public void TestGetMovie()
         {
-            var film = _mongoDBDAO.GetFilm(181812);
+            var film = _mongoDBDAO.GetMovie(181812);
             Assert.AreNotEqual(film, null);
         }
     }

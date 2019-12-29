@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MoviesGlobalResources;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace TelegramConsumer
     public static class Program
     {
         private static readonly TelegramBotClient Bot = new TelegramBotClient("1021492488:AAHzn9Sw4g8Ntyh8p7hr6GWA40nb0639sVU");
+        private static readonly MoviesGlobalResourcesController _moviesGlobalResCtl = new MoviesGlobalResourcesController();
         private static Dictionary<string, int> _filmsContext = new Dictionary<string, int>(); //([UserName, filmId])
         public static void Main()
         {
@@ -61,34 +63,43 @@ namespace TelegramConsumer
                         }
                         //int id = MovieApi.Movie.GetMovie("name", arguments[1]);
                     }
+                    string jsonMovie = _moviesGlobalResCtl.GetMoviesByName(arguments[1]);
+                        Bot.SendTextMessageAsync(message.Chat.Id, jsonMovie.Substring(0,10)); //displaying only the first 10 chars of the json. 
+                        //MovieApi.Movie.GetMovie("name", arguments[1]);_mongoDBDAO
+                    }
                     break;
                 case "/getMovieByCast":
                     if (arguments.Count >= 2)
                     {
+                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CAST, arguments[1]));
                         //MovieApi.Movie.GetMovie("cast", arguments[1]);
                     }
                     break;
                 case "/getMovieByCrew":
                     if (arguments.Count >= 2)
                     {
+                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CREW, arguments[1]));
                         //MovieApi.Movie.GetMovie("crew", arguments[1]);
                     }
                     break;
                 case "/getMovieByGenres":
                     if (arguments.Count >= 2)
                     {
+                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.GENRES, arguments[1]));
                         //MovieApi.Movie.GetMovie("genres", arguments[1]);
                     }
                     break;
                 case "/getMovieByYear":
                     if (arguments.Count >= 2)
                     {
+                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.YEAR, arguments[1]));
                         //MovieApi.Movie.GetMovie("year", arguments[1]);
                     }
                     break;
                 case "/getMovieByLanguage":
                     if (arguments.Count >= 2)
                     {
+                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.LANGUAGE, arguments[1]));
                         //MovieApi.Movie.GetMovie("year", arguments[1]);
                     }
                     break;
@@ -135,15 +146,15 @@ namespace TelegramConsumer
                     {
                         new [] // first row
                         {
-                            InlineKeyboardButton.WithCallbackData("/Name"),
-                            InlineKeyboardButton.WithCallbackData("/Cast"),
-                            InlineKeyboardButton.WithCallbackData("/Crew"),
+                            InlineKeyboardButton.WithCallbackData("Name"),
+                            InlineKeyboardButton.WithCallbackData("Cast"),
+                            InlineKeyboardButton.WithCallbackData("Crew"),
                         },
                         new [] // second row
                         {
-                            InlineKeyboardButton.WithCallbackData("/Genres"),
-                            InlineKeyboardButton.WithCallbackData("/Year"),
-                            InlineKeyboardButton.WithCallbackData("/Language"),
+                            InlineKeyboardButton.WithCallbackData("Genres"),
+                            InlineKeyboardButton.WithCallbackData("Year"),
+                            InlineKeyboardButton.WithCallbackData("Language"),
                         }
                     });
 
@@ -155,7 +166,6 @@ namespace TelegramConsumer
 
                 // send custom keyboard
                 case "/keyboard":
-                    
                     ReplyKeyboardMarkup ReplyKeyboard = new[]
                     {
                         new[] { "1.1", "1.2" },
@@ -166,7 +176,7 @@ namespace TelegramConsumer
                         message.Chat.Id,
                         "Choose",
                         replyMarkup: ReplyKeyboard);
-                    
+
                     break;
 
                 // send a photo
