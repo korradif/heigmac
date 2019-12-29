@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MoviesGlobalResources\MoviesGlobalResources.csproj" />
     <ProjectReference Include="..\Telegram.Bot.Examples.DotNetCoreWebHook\Telegram.Bot.Examples.DotNetCoreWebHook.csproj" />
   </ItemGroup>
 
