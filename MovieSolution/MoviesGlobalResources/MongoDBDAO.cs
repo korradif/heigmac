@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -9,15 +10,25 @@ namespace MoviesGlobalResources
     {
         private MongoClient _client;
         private IMongoCollection<BsonDocument> _movieCollection;
+        private IMongoDatabase _movieDB;
         private const string _connectionString = "mongodb://SAUCOMPUTER01:27017/admin";
+
         private const string _collectionName = "MovieCollection";
         private const string _dbName = "Movie";
+
+        public void SetupTest()
+        {
+            Clear();
+
+        }
 
         public MongoDBDAO()
         {
             _client = new MongoClient(_connectionString);
-            _movieCollection = _client.GetDatabase(_dbName).GetCollection<BsonDocument>(_collectionName);
+            _movieDB = _client.GetDatabase(_dbName);
+            _movieCollection = _movieDB.GetCollection<BsonDocument>(_collectionName);
         }
+
 
         public BsonDocument GetMovie(int movieID)
         {
@@ -25,13 +36,34 @@ namespace MoviesGlobalResources
             var filter = builder.Eq("id", movieID);
             return _movieCollection.Find(filter).FirstOrDefault();
         }
+        //movieName as to be the exact name as "orginal_title"
+        public BsonDocument GetMovie(string movieName)
+        {
+            var builder = Builders<BsonDocument>.Filter;
+            var filter = builder.Eq("original_title", movieName);
+            return _movieCollection.Find(filter).FirstOrDefault();
+        }
 
-        //find movies containing movieName in title
+        internal void Clear()
+        {
+            _movieDB.DropCollection(_collectionName);
+        }
+
+
+        //find movies containing movieName in original_title
         public List<BsonDocument> FindMovies(string movieName)
         {
             var builder = Builders<BsonDocument>.Filter;
-            var filter = builder.Regex("title", new BsonRegularExpression(movieName));
-            return _movieCollection.Find(filter).ToList();
+            var filter = builder.Regex("original_title", new BsonRegularExpression(movieName));
+            var filtredCollection = _movieCollection.Find(filter).ToList();
+            filtredCollection.ForEach(x => x.Remove("_id"));//remove mongodb id to avoid error on json parsing due to "ObjectID" mongo func
+            return filtredCollection;
+        }
+
+        public void InsertMovie(string movieJson)
+        {
+            var document = BsonSerializer.Deserialize<BsonDocument>(movieJson);
+            _movieCollection.InsertOne(document);
         }
 
         public bool MovieExists(int movieID)
@@ -40,8 +72,7 @@ namespace MoviesGlobalResources
         }
         public bool MovieExists(string movieName)
         {
-            //  return GetMovie(movieName) != null;
-            return true;
+            return GetMovie(movieName) != null;
         }
 
     }

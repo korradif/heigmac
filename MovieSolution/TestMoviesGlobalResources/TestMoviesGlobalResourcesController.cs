@@ -16,16 +16,21 @@ namespace TestMoviesGlobalResources
         public void Setup()
         {
             _moviesGlobalResCtl = new MoviesGlobalResourcesController();
+            _moviesGlobalResCtl.ClearCache();
         }
 
         [TestMethod]
         public void TestGetMoviesByName()
         {
-            var film1 = _moviesGlobalResCtl.GetMoviesByName("Star");//Should first call api
-            Trace.WriteLine(film1);
-            var film2 = _moviesGlobalResCtl.GetMoviesByName("Star");//Should then use cache
-            Trace.WriteLine(film2);
-            Assert.IsFalse(String.Equals(film1, film2));
+            var filmFromApi = _moviesGlobalResCtl.GetMoviesByName("Star");//Should first call api
+            Trace.WriteLine(filmFromApi);
+            var filmFromCache = _moviesGlobalResCtl.GetMoviesByName("Star");//Should then use cache
+            Trace.WriteLine(filmFromCache);
+            int filmFromApiCount = JsonHelper.GetMoviesJArrayFromRawJson(filmFromApi).Count;
+            int filmFromCacheCount = JsonHelper.GetMoviesJArrayFromRawJson(filmFromCache).Count;
+            Trace.WriteLine("Film from Api count:" + filmFromApiCount);
+            Trace.WriteLine("Film from Cache count:" + filmFromCacheCount);
+            Assert.AreEqual(filmFromApiCount, filmFromCacheCount);
         }
     }
 }
