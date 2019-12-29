@@ -37,7 +37,7 @@ namespace TelegramConsumer
 
         private static async void BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
         {
-            
+
             var message = messageEventArgs.Message;
 
             if (message == null || message.Type != MessageType.Text) return;
@@ -62,10 +62,10 @@ namespace TelegramConsumer
                             _filmsContext.Add(message.From.Username, 1); //TODO: replace id by result from getmovie
                         }
                         //int id = MovieApi.Movie.GetMovie("name", arguments[1]);
-                    }
-                    string jsonMovie = _moviesGlobalResCtl.GetMoviesByName(arguments[1]);
-                        Bot.SendTextMessageAsync(message.Chat.Id, jsonMovie.Substring(0,10)); //displaying only the first 10 chars of the json. 
-                        //MovieApi.Movie.GetMovie("name", arguments[1]);_mongoDBDAO
+
+                        string jsonMovie = _moviesGlobalResCtl.GetMoviesByName(arguments[1]);
+                        Bot.SendTextMessageAsync(message.Chat.Id, jsonMovie.Substring(0, 10)); //displaying only the first 10 chars of the json. 
+                                                                                               //MovieApi.Movie.GetMovie("name", arguments[1]);_mongoDBDAO
                     }
                     break;
                 case "/getMovieByCast":
@@ -114,7 +114,7 @@ namespace TelegramConsumer
                     _filmsContext.TryGetValue(message.From.Username, out int movieId);
                     if (arguments.Count >= 2)
                     {
-                        bool parsedSucessfully = Double.TryParse(arguments[1],out double rate);
+                        bool parsedSucessfully = Double.TryParse(arguments[1], out double rate);
                         if (parsedSucessfully)
                         {
                             Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + rate + " as a comment to " + movieId.ToString() + " from user " + message.From.Username);
@@ -134,7 +134,7 @@ namespace TelegramConsumer
                     //SocialAPI.AddComment(message.From.Username, movieId, comment);
                     break;
                 case "/Name":
-                    Bot.SendTextMessageAsync(message.Chat.Id,"test");
+                    Bot.SendTextMessageAsync(message.Chat.Id, "test");
                     break;
                 // send inline keyboard
                 case "/getMovie":
