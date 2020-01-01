@@ -32,5 +32,12 @@ namespace TestMoviesGlobalResources
             Trace.WriteLine("Film from Cache count:" + filmFromCacheCount);
             Assert.AreEqual(filmFromApiCount, filmFromCacheCount);
         }
+        
+        [TestMethod]
+        public void TestGetMovieGenres()
+        {
+            var genres = _moviesGlobalResCtl.GetMovieGenres();
+            Assert.AreNotEqual(genres.Count, 0);
+        }
     }
 }

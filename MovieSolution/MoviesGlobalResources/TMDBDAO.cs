@@ -71,5 +71,9 @@ namespace MoviesGlobalResources
                (op4 is null ? "" : (op4 == Operator.AND) ? "," : "|") + value5 + (op5 is null ? "" : (op5 == Operator.AND) ? "," : "|") + value6);
         }
 
+        internal string GetMoviesGenres()
+        {
+            return ExecuteRequest("/genre/movie/list");
+        }
     }
 }

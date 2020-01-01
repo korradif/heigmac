@@ -11,7 +11,7 @@ namespace MoviesGlobalResources
         private MongoClient _client;
         private IMongoCollection<BsonDocument> _movieCollection;
         private IMongoDatabase _movieDB;
-        private const string _connectionString = "mongodb://SAUCOMPUTER01:27017/admin";
+        private const string _connectionString = "mongodb://localhost:27017/admin";
 
         private const string _collectionName = "MovieCollection";
         private const string _dbName = "Movie";

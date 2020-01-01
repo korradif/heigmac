@@ -69,15 +69,18 @@ namespace MoviesGlobalResources
 
         public Dictionary<string,int> GetMovieGenres()
         {
-            //TODO return the available genres in a string if possible formatted as follow:
             if (_moviesGenres is null)
             {
+                string jsonMoviesGenres = _globalMoviesDAO.GetMoviesGenres();
                 _moviesGenres = new Dictionary<string, int>();
-                //TODO: query and parse into dictionary this this https://api.themoviedb.org/3/genre/movie/list?api_key=dca39aa4da3c154aa1c1b0d293e9ba5b&language=en-US
-                _moviesGenres.Add("Action",28 );
-                _moviesGenres.Add("Adventure",12);
-                _moviesGenres.Add("Horror", 27);
-                _moviesGenres.Add("History", 36);
+                
+                JObject jsonMovie = JObject.Parse(jsonMoviesGenres);
+                JArray jsonResults = (JArray)jsonMovie.SelectToken("genres");
+                foreach (JToken jResult in jsonResults)
+                {
+                    _moviesGenres.Add((string)jResult.SelectToken("name"), (int)jResult.SelectToken("id"));    
+                }
+
             }
 
             return _moviesGenres;
