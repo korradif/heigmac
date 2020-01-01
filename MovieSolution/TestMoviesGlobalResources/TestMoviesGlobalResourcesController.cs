@@ -12,6 +12,7 @@ namespace TestMoviesGlobalResources
     {
         private MoviesGlobalResourcesController _moviesGlobalResCtl;
 
+
         [TestInitialize]
         public void Setup()
         {
@@ -38,6 +39,88 @@ namespace TestMoviesGlobalResources
         {
             var genres = _moviesGlobalResCtl.GetMovieGenres();
             Assert.AreNotEqual(genres.Count, 0);
+        }
+
+        [TestMethod]
+        public void TestGetMoviesByFilterCast()
+        {
+            //todo
+            /*
+            var moviesFromApi = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CAST, "Action");//Should first call api
+            Trace.WriteLine(moviesFromApi);
+            var moviesFromCache = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CAST, "Action");//Should then use cache
+            Trace.WriteLine(moviesFromCache);
+            int moviesFromApiCount = JsonHelper.GetMoviesJArrayFromRawJson(moviesFromApi).Count;
+            int moviesFromCacheCount = JsonHelper.GetMoviesJArrayFromRawJson(moviesFromCache).Count;
+            Trace.WriteLine("movies from Api count:" + moviesFromApiCount);
+            Trace.WriteLine("movies from Cache count:" + moviesFromCacheCount);
+            Assert.AreEqual(moviesFromApiCount, moviesFromCacheCount);
+            Assert.AreNotEqual(0, moviesFromCacheCount);
+            */
+        }
+
+        [TestMethod]
+        public void TestGetMoviesByFilterCrew()
+        {
+            //todo
+            /*
+            var moviesFromApi = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CREW, "Action");//Should first call api
+            Trace.WriteLine(moviesFromApi);
+            var moviesFromCache = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CREW, "Action");//Should then use cache
+            Trace.WriteLine(moviesFromCache);
+            int moviesFromApiCount = JsonHelper.GetMoviesJArrayFromRawJson(moviesFromApi).Count;
+            int moviesFromCacheCount = JsonHelper.GetMoviesJArrayFromRawJson(moviesFromCache).Count;
+            Trace.WriteLine("movies from Api count:" + moviesFromApiCount);
+            Trace.WriteLine("movies from Cache count:" + moviesFromCacheCount);
+            Assert.AreEqual(moviesFromApiCount, moviesFromCacheCount);
+            Assert.AreNotEqual(0, moviesFromCacheCount);
+            */
+        }
+
+        [TestMethod]
+        public void TestGetMoviesByFilterGenre() 
+        { 
+            var moviesFromApi = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.GENRES, "Action");//Should first casll api
+            Trace.WriteLine(moviesFromApi);
+            var moviesFromCache = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.GENRES, "Action");//Should then use cache
+            Trace.WriteLine(moviesFromCache);
+            int moviesFromApiCount = JsonHelper.GetMoviesJArrayFromRawJson(moviesFromApi).Count;
+            int moviesFromCacheCount = JsonHelper.GetMoviesJArrayFromRawJson(moviesFromCache).Count;
+            Trace.WriteLine("movies from Api count:" + moviesFromApiCount);
+            Trace.WriteLine("movies from Cache count:" + moviesFromCacheCount);
+            Assert.AreEqual(moviesFromApiCount, moviesFromCacheCount);
+            Assert.AreNotEqual(0, moviesFromCacheCount);
+        }
+        [TestMethod]
+        public void TestGetMoviesByFilterLanguage()
+        {
+            var moviesFromApi = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.LANGUAGE, "en");//Should first call api
+            Trace.WriteLine(moviesFromApi);
+            var moviesFromCache = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.LANGUAGE, "en");//Should then use cache
+            Trace.WriteLine(moviesFromCache);
+            int moviesFromApiCount = JsonHelper.GetMoviesJArrayFromRawJson(moviesFromApi).Count;
+            int moviesFromCacheCount = JsonHelper.GetMoviesJArrayFromRawJson(moviesFromCache).Count;
+            Trace.WriteLine("movies from Api count:" + moviesFromApiCount);
+            Trace.WriteLine("movies from Cache count:" + moviesFromCacheCount);
+            Assert.AreEqual(moviesFromApiCount, moviesFromCacheCount);
+            Assert.AreNotEqual(0, moviesFromCacheCount);
+        }
+        [TestMethod]
+        public void TestGetMoviesByFilterYear()
+        {
+            //use release date
+            /*
+            var moviesFromApi = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.YEAR, "Action");//Should first call api
+            Trace.WriteLine(moviesFromApi);
+            var moviesFromCache = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.YEAR, "Action");//Should then use cache
+            Trace.WriteLine(moviesFromCache);
+            int moviesFromApiCount = JsonHelper.GetMoviesJArrayFromRawJson(moviesFromApi).Count;
+            int moviesFromCacheCount = JsonHelper.GetMoviesJArrayFromRawJson(moviesFromCache).Count;
+            Trace.WriteLine("movies from Api count:" + moviesFromApiCount);
+            Trace.WriteLine("movies from Cache count:" + moviesFromCacheCount);
+            Assert.AreEqual(moviesFromApiCount, moviesFromCacheCount);
+            Assert.AreNotEqual(0, moviesFromCacheCount);
+            */
         }
     }
 }

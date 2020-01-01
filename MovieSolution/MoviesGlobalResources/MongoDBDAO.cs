@@ -19,7 +19,6 @@ namespace MoviesGlobalResources
         public void SetupTest()
         {
             Clear();
-
         }
 
         public MongoDBDAO()
@@ -44,6 +43,20 @@ namespace MoviesGlobalResources
             return _movieCollection.Find(filter).FirstOrDefault();
         }
 
+        internal List<BsonDocument> GetMoviesByGenre(int v)
+        {
+            var builder = Builders<BsonDocument>.Filter;
+            var filter = builder.AnyEq("genre_ids", v);
+            return PrepareResult(_movieCollection.Find(filter).ToList());
+        }
+
+        internal List<BsonDocument> GetMoviesByLanguage(string value)
+        {
+            var builder = Builders<BsonDocument>.Filter;
+            var filter = builder.Eq("original_language", value);
+            return PrepareResult(_movieCollection.Find(filter).ToList());
+        }
+
         internal void Clear()
         {
             _movieDB.DropCollection(_collectionName);
@@ -55,9 +68,7 @@ namespace MoviesGlobalResources
         {
             var builder = Builders<BsonDocument>.Filter;
             var filter = builder.Regex("original_title", new BsonRegularExpression(movieName));
-            var filtredCollection = _movieCollection.Find(filter).ToList();
-            filtredCollection.ForEach(x => x.Remove("_id"));//remove mongodb id to avoid error on json parsing due to "ObjectID" mongo func
-            return filtredCollection;
+            return PrepareResult(_movieCollection.Find(filter).ToList());
         }
 
         public void InsertMovie(string movieJson)
@@ -75,5 +86,10 @@ namespace MoviesGlobalResources
             return GetMovie(movieName) != null;
         }
 
+        private List<BsonDocument> PrepareResult(List<BsonDocument> listMovies)
+        {
+            listMovies.ForEach(x => x.Remove("_id"));//remove mongodb id to avoid error on json parsing due to "ObjectID" mongo func
+            return listMovies;
+        }
     }
 }

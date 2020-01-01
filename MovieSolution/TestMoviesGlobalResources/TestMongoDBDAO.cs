@@ -16,7 +16,7 @@ namespace TestMoviesGlobalResources
             _mongoDBDAO.SetupTest();
         }
 
-        private void InsertMovie()
+        private void InsertTestMovies()
         {
             foreach (var movie in JsonHelper.GetMoviesJArrayFromRawJson(_jsonTestDataInsert))
             {
@@ -27,14 +27,14 @@ namespace TestMoviesGlobalResources
         [TestMethod]
         public void TestInsertMovie()
         {
-            InsertMovie();
+            InsertTestMovies();
         }
 
 
         [TestMethod]
         public void TestGetMovie()
         {
-            InsertMovie();
+            InsertTestMovies();
             var film1 = _mongoDBDAO.GetMovie(11);//id exists
             Assert.AreNotEqual(film1, null);
             var film2 = _mongoDBDAO.GetMovie(1231231231);//id not exists
@@ -44,7 +44,7 @@ namespace TestMoviesGlobalResources
         [TestMethod]
         public void TestFindMovies()
         {
-            InsertMovie();
+            InsertTestMovies();
             var film1 = _mongoDBDAO.FindMovies("Star Wa");//name exists
             Assert.AreNotEqual(film1.Count, 0);
             var film2 = _mongoDBDAO.FindMovies("Star Wa123");//name not exists

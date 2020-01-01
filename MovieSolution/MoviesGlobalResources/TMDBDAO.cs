@@ -48,7 +48,7 @@ namespace MoviesGlobalResources
                 case Filter.CAST: return "with_cast";
                 case Filter.CREW: return "with_crew";
                 case Filter.GENRES: return "with_genres";
-                case Filter.LANGUAGE: return "language";
+                case Filter.LANGUAGE: return "with_original_language";
                 default: throw new NotImplementedException();
             }
         }
