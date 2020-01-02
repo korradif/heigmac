@@ -67,7 +67,7 @@ namespace MoviesGlobalResources
              Operator? op4 = null, string value5 = null, Operator? op5 = null, string value6 = null)
         {
             return ExecuteRequest("/discover/movie", "&" + FilterToString(filter) + "=" + value + 
-               (op is null ? "" : (op == Operator.AND) ? "," : "|") + (value2 + op2 is null ? "" : (op2 == Operator.AND) ? "," : "|") + value3 + (op3 is null ? "" : (op3 == Operator.AND) ? "," : "|") + value4 +
+               (op is null ? "" : (op == Operator.AND) ? "," : "|") + value2 + (op2 is null ? "" : (op2 == Operator.AND) ? "," : "|") + value3 + (op3 is null ? "" : (op3 == Operator.AND) ? "," : "|") + value4 +
                (op4 is null ? "" : (op4 == Operator.AND) ? "," : "|") + value5 + (op5 is null ? "" : (op5 == Operator.AND) ? "," : "|") + value6);
         }
 

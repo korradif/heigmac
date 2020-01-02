@@ -42,7 +42,7 @@ namespace MoviesGlobalResources
                     case Filter.LANGUAGE:
                         return ParseBsonDocumentListAsJson(_cacheDAO.GetMoviesByLanguage(value));
                     case Filter.YEAR:
-                        return "";
+                        return ParseBsonDocumentListAsJson(_cacheDAO.GetMoviesByYear(Int32.Parse(value)));
                     default:
                         throw new NotImplementedException();
                 }
