@@ -24,6 +24,16 @@ namespace SocialResources
                 session.Run("MATCH(n) DETACH DELETE n");
             }
         }
+
+        public void UserWillwatchMovie(string username, string originalTitle)
+        {
+            using (var session = _driver.Session())
+            {
+                session.Run("MATCH (user:User {username : '" + username
+                             + "'}), (movie:Movie {originalTitle : '" 
+                             + originalTitle + "'}) MERGE (user)-[:TO_WATCH]->(movie)");
+            }
+        }
         
         public void InsertUser(long tId, string username)
         {
@@ -41,21 +51,17 @@ namespace SocialResources
             }
         }
 
-        public void UserRatesMovie(long tId, long mId, string description)
+        internal void UserCommentsMovie(string username, string originalTitle, string comment)
         {
             using (var session = _driver.Session())
             {
-                session.Run("MATCH (user:User {username : '" + GetUsernameById(tId) 
-                            + "'}), (movie:Movie {originalTitle : '" 
-                            + GetOriginaltitleById(mId) + "'}) MERGE (user)-[:COMMENTS{description : '" 
-                            + description + "'}]->(movie)");
+                session.Run("MATCH (user:User {username : '" + username
+                             + "'}), (movie:Movie {originalTitle : '" 
+                             + originalTitle + "'}) MERGE (user)-[:COMMENTS{description : '" 
+                             + comment + "'}]->(movie)");
             }
         }
-
-        internal void UserCommentsMovie(string username, string movieName, string comment)
-        {
-            throw new NotImplementedException();
-        }
+        
         public void UserRatesMovie(long tId, long mId, double rating)
         {
             using (var session = _driver.Session())
@@ -67,25 +73,45 @@ namespace SocialResources
             }
         }
 
-        internal void UserRatesMovie(string username, string movieName, double rate)
+        internal void UserRatesMovie(string username, string originalTitle, double rating)
         {
-            throw new NotImplementedException();
+            using (var session = _driver.Session())
+            {
+                session.Run("MATCH (user:User {username : '" + username
+                             + "'}), (movie:Movie {originalTitle : '" 
+                             + originalTitle + "'}) MERGE (user)-[:RATES{rating : " 
+                             + rating + "}]->(movie)");
+            }
         }
 
         internal bool UserExists(string username)
         {
-            throw new NotImplementedException();
+            using (var session = _driver.Session())
+            {
+                var result = session.Run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u");
+
+                return result.ToList().Count != 0;
+            }
         }
-        internal bool MovieExists(string movieName)
+        
+        internal bool MovieExists(string originalTitle)
         {
-            throw new NotImplementedException();
+            using (var session = _driver.Session())
+            {
+                var result = session.Run("MATCH (m:User) WHERE m.originalTitle = '" + originalTitle + "' RETURN m");
+
+                return result.ToList().Count != 0;
+            }
         }
-
-  
-
+        
         internal void UserIsFriendWith(string username, string friendUsername)
         {
-            throw new NotImplementedException();
+            using (var session = _driver.Session())
+            {
+                session.Run("MATCH (user1:User {username : '" + username
+                              + "'}), (user2:User {username : '"
+                              + friendUsername + "'}) MERGE (user1)-[:IS_FRIEND]->(user2)");
+            }
         }
 
         public void UserIsFriendWith(long tId1, long tId2)
@@ -97,9 +123,7 @@ namespace SocialResources
                             + GetUsernameById(tId2) + "'}) MERGE (user1)-[:IS_FRIEND]->(user2)");
             }
         }
-
-  
-
+        
         public string GetUsernameById(long tId)
         {
             string username = "";
@@ -146,8 +170,6 @@ namespace SocialResources
 
             return ret;
         }
-        
-      
         
         internal void GetSuggestedMovies(long tId, int depth, Dictionary<string, RatedMovie> moviesRatings)
         {

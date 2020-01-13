@@ -11,6 +11,27 @@ namespace SocialResources
         {
             _neo4JDAO = new Neo4JDAO();
         }
+
+        public void Connect()
+        {
+            _neo4JDAO.Connect();    
+        }
+        
+        public void WipeDB()
+        {
+            _neo4JDAO.WipeDB();
+        }
+
+        public void InsertUser(long tId, string username)
+        {
+            _neo4JDAO.InsertUser(tId, username);
+        }
+
+        public void InsertMovie(long mId, string movieName)
+        {
+            _neo4JDAO.InsertMovie(mId, movieName);
+        }
+            
         public List<KeyValuePair<string, Neo4JDAO.RatedMovie>> GetSuggestedMovies(long tId, int depth)
         {
             // map movies with the class that allow to compute
@@ -52,7 +73,13 @@ namespace SocialResources
              
         }
 
-
+        public void AddToWatch(string username, string movieName)
+        {
+            if (ensureUserExists(username) && ensureMovieExists(movieName))
+            {
+                _neo4JDAO.UserWillwatchMovie(username, movieName);
+            }
+        }
         public void AddRate(string username, string movieName, double rate)
         {
             if (ensureUserExists(username) && ensureMovieExists(movieName))
