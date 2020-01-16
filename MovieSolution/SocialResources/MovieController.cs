@@ -31,7 +31,23 @@ namespace SocialResources
         {
             _neo4JDAO.InsertMovie(mId, movieName);
         }
-            
+
+        public List<string> GetFriendTowatchMovies(string friendUsername)
+        {
+            throw new NotImplementedException();
+            // todo : link with GetSuggestedMovies
+        }
+
+        public double GetAverageRateByMovie(string movieName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<string> GetCommentsByMovie(string movieName)
+        {
+            throw new NotImplementedException();
+        }
+        
         public List<KeyValuePair<string, Neo4JDAO.RatedMovie>> GetSuggestedMovies(long tId, int depth)
         {
             // map movies with the class that allow to compute

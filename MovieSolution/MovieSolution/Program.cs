@@ -16,7 +16,7 @@ namespace MovieSolution
             
             ctr.InsertUser(0, "simmonde");
             ctr.InsertUser(1, "saumonLeCitron");
-            ctr.AddFriend("simmondxe", "saumonLeCitron");
+            ctr.AddFriend("simmonde", "saumonLeCitron");
             
             /*
             ctr.AddFriend(1, "saumonlecitron");
