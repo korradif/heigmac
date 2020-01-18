@@ -32,20 +32,19 @@ namespace SocialResources
             _neo4JDAO.InsertMovie(mId, movieName);
         }
 
-        public List<string> GetFriendTowatchMovies(string friendUsername)
+        public List<string> GetFriendTowatchList(string friendUsername)
         {
-            throw new NotImplementedException();
-            // todo : link with GetSuggestedMovies
+            return _neo4JDAO.GetFriendTowatchList(friendUsername);
         }
 
         public double GetAverageRateByMovie(string movieName)
         {
-            throw new NotImplementedException();
+            return _neo4JDAO.GetAverageRateByMovie(movieName);
         }
 
         public List<string> GetCommentsByMovie(string movieName)
         {
-            throw new NotImplementedException();
+            return _neo4JDAO.GetCommentsByMovie(movieName);
         }
         
         public List<KeyValuePair<string, Neo4JDAO.RatedMovie>> GetSuggestedMovies(long tId, int depth)
@@ -54,7 +53,7 @@ namespace SocialResources
             // to cumpute ratings at a specific depth value
             var moviesRatings = new Dictionary<string, Neo4JDAO.RatedMovie>();
 
-           // _neo4JDAO.GetSuggestedMovies(tId, depth, moviesRatings);
+            _neo4JDAO.GetSuggestedMovies(tId, depth, moviesRatings);
 
             foreach (var suggestedMovie in moviesRatings)
             {

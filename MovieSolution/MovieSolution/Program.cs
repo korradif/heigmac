@@ -17,6 +17,11 @@ namespace MovieSolution
             ctr.InsertUser(0, "simmonde");
             ctr.InsertUser(1, "saumonLeCitron");
             ctr.AddFriend("simmonde", "saumonLeCitron");
+            ctr.InsertMovie(0, "Star Wars");
+            ctr.AddRate("simmonde", "Star Wars", 2);
+            ctr.AddRate("saumonLeCitron", "Star Wars", 2);
+            
+            Console.WriteLine(ctr.GetAverageRateByMovie("Star Wars"));
             
             /*
             ctr.AddFriend(1, "saumonlecitron");

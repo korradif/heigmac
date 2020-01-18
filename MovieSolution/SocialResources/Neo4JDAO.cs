@@ -88,9 +88,9 @@ namespace SocialResources
         {
             using (var session = _driver.Session())
             {
-                var result = session.Run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u");
+                var result = session.Run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.username");
 
-                return result.ToList().Count != 0;
+                return result.Keys.Count != 0;
             }
         }
         
@@ -100,7 +100,7 @@ namespace SocialResources
             {
                 var result = session.Run("MATCH (m:User) WHERE m.originalTitle = '" + originalTitle + "' RETURN m");
 
-                return result.ToList().Count != 0;
+                return result.Keys.Count != 0;
             }
         }
         
@@ -122,6 +122,53 @@ namespace SocialResources
                             + "'}), (user2:User {username : '"
                             + GetUsernameById(tId2) + "'}) MERGE (user1)-[:IS_FRIEND]->(user2)");
             }
+        }
+        
+        public List<string> GetFriendTowatchList(string friendUsername)
+        {
+            List<string> ret = new List<string>(); 
+            using (var session = _driver.Session())
+            {
+                var result = session.Run("MATCH (u)-[:TO_WATCH]->(m) WHERE u.username = '"
+                                         + friendUsername + "' RETURN m.originalTitle");
+                foreach (var record in result)
+                {
+                    ret.Add(record["m.originalTitle"].ToString());
+                }
+            }
+
+            return ret;
+        }
+
+        public double GetAverageRateByMovie(string movieName)
+        {
+            using (var session = _driver.Session())
+            {
+                var result = session.Run("MATCH (:User)-[r:RATES]->(m) WHERE m.originalTitle = '"
+                                         + movieName + "' RETURN avg(r.rating) as avg");
+                foreach (var record in result)
+                {
+                    return Convert.ToDouble(record["avg"]);
+                }
+            }
+
+            return -1;
+        }
+
+        public List<string> GetCommentsByMovie(string movieName)
+        {
+            List<string> ret = new List<string>();
+            using (var session = _driver.Session())
+            {
+                var result = session.Run("MATCH (:User)-[c:COMMENTS]->(m) WHERE m.originalTitle = '"
+                                         + movieName + "' RETURN c.description");
+                foreach (var record in result)
+                {
+                    ret.Add(record["c.description"].ToString());
+                }
+            }
+            
+            return ret;
         }
         
         public string GetUsernameById(long tId)
@@ -154,13 +201,13 @@ namespace SocialResources
             }
         }
 
-        public List<string> GetFriends(int tId)
+        public List<string> GetFriends(string username)
         {
             List<string> ret = new List<string>();
             using (var session = _driver.Session())
             {
-                var friends = session.Run("MATCH (a)-[:IS_FRIEND]->(b) WHERE a.tId = "
-                                         + tId + " RETURN b.tId");
+                var friends = session.Run("MATCH (a)-[:IS_FRIEND]->(b) WHERE a.username = "
+                                         + username + " RETURN b.tId");
 
                 foreach (var friend in friends)
                 {
