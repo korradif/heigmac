@@ -3,7 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieSolution", "MovieSolution\MovieSolution.csproj", "{430D738B-6F2E-4B37-B005-4B32366DFE66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSolution", "MovieSolution\MovieSolution.csproj", "{430D738B-6F2E-4B37-B005-4B32366DFE66}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Telegram.Bot.Examples.DotNetCoreWebHook", "Telegram.Bot.Examples.DotNetCoreWebHook\Telegram.Bot.Examples.DotNetCoreWebHook.csproj", "{05690039-56FF-4EB4-AB62-FBF2C30FCF72}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoviesGlobalResources", "MoviesGlobalResources\MoviesGlobalResources.csproj", "{CBBADBE2-7F7A-4160-93AC-EAA9DE99D8E1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestMoviesGlobalResources", "TestMoviesGlobalResources\TestMoviesGlobalResources.csproj", "{860DEA62-C310-4DF6-9059-872DCE25C185}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialResources", "SocialResources\SocialResources.csproj", "{64518B12-5B23-4BEB-8C41-28A35B146F86}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestSocialResources", "TestSocialResources\TestSocialResources.csproj", "{92754156-8F10-45EA-9B7C-C418553E3EF0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramConsumer", "TelegramConsumer\TelegramConsumer.csproj", "{EC5FFBE9-8B66-4FDC-BC28-37E0CCA2F2E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +27,30 @@ Global
 		{430D738B-6F2E-4B37-B005-4B32366DFE66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{430D738B-6F2E-4B37-B005-4B32366DFE66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{430D738B-6F2E-4B37-B005-4B32366DFE66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05690039-56FF-4EB4-AB62-FBF2C30FCF72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05690039-56FF-4EB4-AB62-FBF2C30FCF72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05690039-56FF-4EB4-AB62-FBF2C30FCF72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05690039-56FF-4EB4-AB62-FBF2C30FCF72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBBADBE2-7F7A-4160-93AC-EAA9DE99D8E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBBADBE2-7F7A-4160-93AC-EAA9DE99D8E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBBADBE2-7F7A-4160-93AC-EAA9DE99D8E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBBADBE2-7F7A-4160-93AC-EAA9DE99D8E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{860DEA62-C310-4DF6-9059-872DCE25C185}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{860DEA62-C310-4DF6-9059-872DCE25C185}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{860DEA62-C310-4DF6-9059-872DCE25C185}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{860DEA62-C310-4DF6-9059-872DCE25C185}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64518B12-5B23-4BEB-8C41-28A35B146F86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64518B12-5B23-4BEB-8C41-28A35B146F86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64518B12-5B23-4BEB-8C41-28A35B146F86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64518B12-5B23-4BEB-8C41-28A35B146F86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92754156-8F10-45EA-9B7C-C418553E3EF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92754156-8F10-45EA-9B7C-C418553E3EF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92754156-8F10-45EA-9B7C-C418553E3EF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92754156-8F10-45EA-9B7C-C418553E3EF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC5FFBE9-8B66-4FDC-BC28-37E0CCA2F2E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC5FFBE9-8B66-4FDC-BC28-37E0CCA2F2E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC5FFBE9-8B66-4FDC-BC28-37E0CCA2F2E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC5FFBE9-8B66-4FDC-BC28-37E0CCA2F2E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
