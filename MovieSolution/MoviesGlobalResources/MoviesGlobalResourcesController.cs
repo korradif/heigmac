@@ -38,7 +38,7 @@ namespace MoviesGlobalResources
                     case Filter.CREW:
                         return "";
                     case Filter.GENRES:
-                        return ParseBsonDocumentListAsJson(_cacheDAO.GetMoviesByGenre(GetMovieGenreIdByName(value)));
+                        return ParseBsonDocumentListAsJson(_cacheDAO.GetMoviesByGenre(Int32.Parse(value)));
                     case Filter.LANGUAGE:
                         return ParseBsonDocumentListAsJson(_cacheDAO.GetMoviesByLanguage(value));
                     case Filter.YEAR:
@@ -53,7 +53,8 @@ namespace MoviesGlobalResources
                 switch (filter)
                 {
                     case Filter.GENRES:
-                        requestResult = _globalMoviesDAO.GetMoviesByFilter(filter, GetMovieGenreIdByName(value).ToString());
+//                        requestResult = _globalMoviesDAO.GetMoviesByFilter(filter, GetMovieGenreIdByName(value).ToString());
+                        requestResult = _globalMoviesDAO.GetMoviesByFilter(filter, value);
                         break;
                     default:
                         requestResult = _globalMoviesDAO.GetMoviesByFilter(filter, value);

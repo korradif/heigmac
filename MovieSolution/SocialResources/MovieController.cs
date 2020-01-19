@@ -96,6 +96,16 @@ namespace SocialResources
              
         }
 
+        public List<string> GetFriends(string username)
+        {
+            Connect();
+            if (ensureUserExists(username))
+            {
+                return _neo4JDAO.GetFriends(username);
+            }
+            return new List<string>();
+        }
+
         public void AddToWatch(string username, string movieName)
         {
             Connect();
@@ -140,6 +150,17 @@ namespace SocialResources
             return true;
         }
 
-      
+
+        public void LoadInitialData()
+        {
+
+            _neo4JDAO.InsertUser(0, "Simmonde");
+            _neo4JDAO.InsertUser(1, "Saumonlecitron");
+            _neo4JDAO.InsertUser(1, "FredericKorradi");
+            _neo4JDAO.UserIsFriendWith("Simmonde", "Saumonlecitron");
+            _neo4JDAO.InsertMovie(0, "Star Wars: The Rise of Skywalker");
+            _neo4JDAO.UserRatesMovie("Simmonde", "Star Wars: The Rise of Skywalker", 2);
+            _neo4JDAO.UserRatesMovie("Saumonlecitron", "Star Wars: The Rise of Skywalker", 2);
+        }
     }
 }

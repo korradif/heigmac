@@ -92,7 +92,6 @@ namespace SocialResources
             using (var session = _driver.Session())
             {
                 var result = session.Run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.username");
-
                 return result.Keys.Count != 0;
             }
         }

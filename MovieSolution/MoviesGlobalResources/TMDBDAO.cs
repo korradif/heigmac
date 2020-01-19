@@ -44,7 +44,7 @@ namespace MoviesGlobalResources
         {
             switch (filter)
             {
-                case Filter.YEAR: return "year";
+                case Filter.YEAR: return "primary_release_year";
                 case Filter.CAST: return "with_cast";
                 case Filter.CREW: return "with_crew";
                 case Filter.GENRES: return "with_genres";

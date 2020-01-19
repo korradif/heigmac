@@ -25,6 +25,9 @@ namespace TelegramConsumer
 
         public static void Main()
         {
+            _moviesGlobalResCtl.ClearCache();
+            _movieController.WipeDB();
+            _movieController.LoadInitialData();
             var me = Bot.GetMeAsync().Result;
             Console.Title = me.Username;
 
@@ -141,6 +144,9 @@ namespace TelegramConsumer
                         _movieController.AddFriend(message.From.Username, arguments[1].Substring(1));
                     }
                     break;
+                case "/getFriends":
+//                    List<string> friends = _movieController.GetFriends(username);
+                    break;
                 case "/rate":
                     _moviesContext.TryGetValue(message.From.Username, out string movieName);
                     if (arguments.Count >= 2)
@@ -253,15 +259,15 @@ namespace TelegramConsumer
                             string comment2 = arguments[0].Substring(1);
                             for (int i = 1; i < arguments.Count; ++i) comment2 += " " + arguments[i];
                             Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + comment2 + " as a comment to " + session.SelectedMovie + " from user " + message.From.Username);
-                            //SocialAPI.AddComment(message.From.Username, movieId, comment);
+                            _movieController.AddComment(message.From.Username, session.SelectedMovie, comment2);
                             session.Step = Step.Default;
                             break;
                         case Step.RateMovie:
                             bool parsedSucessfully = Double.TryParse(arguments[0].Substring(1).Replace('.', ','), out double rate);
                             if (parsedSucessfully)
                             {
+                                _movieController.AddRate(username, session.SelectedMovie, rate);
                                 Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + rate + " as a mark to " + session.SelectedMovie + " from user " + message.From.Username);
-                                //SocialAPI.AddRate(message.From.Username, movieId, rate);
                                 session.Step = Step.Default;
                             }
                             else
@@ -272,13 +278,11 @@ namespace TelegramConsumer
                         default:
                             const string usage = @"
 Usage:
-/author   - display author name
-/getMovieByName - get the Movie 
-/repo     - display the link to the repo
-/inline   - send inline keyboard
-/keyboard - send custom keyboard
-/photo    - send a photo
-/request  - request location or contact";
+/author   - display authors name
+/getMovie - get the Movie (various filters)
+/addFriend [username] - add an user as a friend
+/getFriends - display friends list
+";
 
                             await Bot.SendTextMessageAsync(
                                 message.Chat.Id,
@@ -386,7 +390,7 @@ Usage:
                         switch (callbackQuery.Data)
                         {
                             case "Add to WatchList":
-                                //SocialAPI.AddToWatchList(message.From.Username, movieId);
+                                _movieController.AddToWatch(username, session.SelectedMovie);
                                 break;
                             case "Comment":
                                 //Comment

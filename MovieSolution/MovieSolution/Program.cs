@@ -21,6 +21,7 @@ namespace MovieSolution
             ctr.AddRate("simmonde", "Star Wars", 2);
             ctr.AddRate("saumonLeCitron", "Star Wars", 2);
             
+            
             Console.WriteLine(ctr.GetAverageRateByMovie("Star Wars"));
             
             /*
