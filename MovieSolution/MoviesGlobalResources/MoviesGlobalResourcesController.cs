@@ -120,7 +120,6 @@ namespace MoviesGlobalResources
         public int GetMovieGenreIdByName(string genreName)
         {
             int id = 0;
-            //TODO return the id of the genre from it's name
             _moviesGenres.TryGetValue(genreName,out id);
             return id;
         }
