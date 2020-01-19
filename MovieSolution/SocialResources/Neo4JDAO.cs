@@ -208,12 +208,12 @@ namespace SocialResources
             List<string> ret = new List<string>();
             using (var session = _driver.Session())
             {
-                var friends = session.Run("MATCH (a)-[:IS_FRIEND]->(b) WHERE a.username = "
-                                         + username + " RETURN b.tId");
+                var friends = session.Run("MATCH (a)-[:IS_FRIEND]->(b) WHERE a.username = '"
+                                         + username + "' RETURN b.tId");
 
                 foreach (var friend in friends)
                 {
-                    ret.Add(GetUsernameById((int)friend["b.tId"]));
+                    ret.Add(GetUsernameById((long)friend["b.tId"]));
                 }
             }
 

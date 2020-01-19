@@ -156,7 +156,7 @@ namespace SocialResources
 
             _neo4JDAO.InsertUser(0, "Simmonde");
             _neo4JDAO.InsertUser(1, "Saumonlecitron");
-            _neo4JDAO.InsertUser(1, "FredericKorradi");
+            _neo4JDAO.InsertUser(2, "FredericKorradi");
             _neo4JDAO.UserIsFriendWith("Simmonde", "Saumonlecitron");
             _neo4JDAO.InsertMovie(0, "Star Wars: The Rise of Skywalker");
             _neo4JDAO.UserRatesMovie("Simmonde", "Star Wars: The Rise of Skywalker", 2);

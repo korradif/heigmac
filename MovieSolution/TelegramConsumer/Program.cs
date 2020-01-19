@@ -74,7 +74,8 @@ namespace TelegramConsumer
                     }
                     break;
                 case "/getFriends":
-                    //                    List<string> friends = _movieController.GetFriends(username);
+                    List<string> friends = _movieController.GetFriends(username);
+                    DisplayFriends(friends, session);
                     break;
                 case "/getMovie":
                     await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.Typing);
@@ -145,6 +146,28 @@ Usage:
                     }
                     break;
             }
+        }
+
+        private static async Task DisplayFriends(List<string> friends, UserSession session)
+        {
+            await Bot.SendChatActionAsync(session.Message.Chat.Id, ChatAction.Typing);
+            List<List<InlineKeyboardButton>> keyboardButtonsLines = new List<List<InlineKeyboardButton>>();
+            for (int i = 0; i < friends.Count; ++i)
+            {
+                List<InlineKeyboardButton> row = new List<InlineKeyboardButton>();
+                for (int j = 0; j < 3 && i < friends.Count; ++j, ++i)
+                {
+                    row.Add(InlineKeyboardButton.WithCallbackData(friends[i]));
+                }
+                keyboardButtonsLines.Add(row);
+            }
+
+            var inlineKeyboard = new InlineKeyboardMarkup(keyboardButtonsLines);
+            session.Step = Step.ChooseFriend;
+            await Bot.SendTextMessageAsync(
+                session.Message.Chat.Id,
+                "Choose",
+                replyMarkup: inlineKeyboard);
         }
 
         private static void displayFilteredMovies(UserSession session)
@@ -248,15 +271,56 @@ Usage:
                             case "Rate":
                                 session.Step = Step.RateMovie;
                                 break;
+                            case "See comments":
+                                DisplayComments(_movieController.GetCommentsByMovie(session.SelectedMovie), session,"Comments");
+                                session.Step = Step.Default;
+                                break;
+                            case "See average rate":
+                                double average = _movieController.GetAverageRateByMovie(session.SelectedMovie);
+                                List<string> dis = new List<string>();
+                                dis.Add(average.ToString());
+                                DisplayComments(dis,session, "Average rate");
+                                session.Step = Step.Default;
+                                break;
                         }
                         break;
-
-
+                    case Step.ChooseFriend:
+                        session.SelectedFriend = callbackQuery.Data;
+                        session.Step = Step.ChooseFriendAction;
+                        GetFriendActionChoiceAsync(session);
+                        break;
+                    case Step.ChooseFriendAction:
+                        switch (callbackQuery.Data)
+                        {
+                            case "See watchlist":
+                                _movieController.GetFriendTowatchList(session.SelectedFriend);
+                                break;
+                        }
+                        break;
                 }
             }
             await Bot.SendTextMessageAsync(
                 callbackQuery.Message.Chat.Id,
                 $"{callbackQuery.Data}");
+        }
+
+        private static async void DisplayComments(List<string> comments, UserSession session,string message)
+        {
+            await Bot.SendChatActionAsync(session.Message.Chat.Id, ChatAction.Typing);
+            List<List<InlineKeyboardButton>> keyboardButtonsLines = new List<List<InlineKeyboardButton>>();
+            foreach (string comment in comments)
+            {
+                List<InlineKeyboardButton> row = new List<InlineKeyboardButton>();
+                row.Add(comment);
+                keyboardButtonsLines.Add(row);
+            }
+            var inlineKeyboard = new InlineKeyboardMarkup(keyboardButtonsLines);
+
+
+            await Bot.SendTextMessageAsync(
+                session.Message.Chat.Id,
+                message,
+                replyMarkup: inlineKeyboard);
         }
 
         private static int getGenreId(string data)
@@ -300,8 +364,31 @@ Usage:
                         InlineKeyboardButton.WithCallbackData("Add to WatchList"),
                         InlineKeyboardButton.WithCallbackData("Comment"),
                         InlineKeyboardButton.WithCallbackData("Rate")
+                    },
+                    new []
+                    {
+                        InlineKeyboardButton.WithCallbackData("See comments"),
+                        InlineKeyboardButton.WithCallbackData("See average rate")
                     }
                 });
+
+            await Bot.SendTextMessageAsync(
+                session.Message.Chat.Id,
+                "Choose",
+                replyMarkup: inlineKeyboard);
+        }
+        private static async Task GetFriendActionChoiceAsync(UserSession session)
+        {
+            await Bot.SendChatActionAsync(session.Message.Chat.Id, ChatAction.Typing);
+
+            session.Step = Step.ChooseMovieAction;
+            var inlineKeyboard = new InlineKeyboardMarkup(new[]
+            {
+                new [] // first row
+                {
+                    InlineKeyboardButton.WithCallbackData("See watchlist")
+                }
+            });
 
             await Bot.SendTextMessageAsync(
                 session.Message.Chat.Id,

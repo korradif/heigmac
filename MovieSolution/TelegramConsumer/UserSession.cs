@@ -14,7 +14,9 @@ namespace TelegramConsumer
         ChooseMovieAction,
         CommentMovie,
         RateMovie,
-        ChooseGenre
+        ChooseGenre,
+        ChooseFriend,
+        ChooseFriendAction
     }
     public class UserSession
     {
@@ -30,5 +32,6 @@ namespace TelegramConsumer
         public string FilterValue { get; internal set; }
         public Message Message { get; internal set; }
         public string SelectedMovie { get; internal set; }
+        public string SelectedFriend { get; internal set; }
     }
 }
