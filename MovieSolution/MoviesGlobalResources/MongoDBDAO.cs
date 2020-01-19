@@ -60,7 +60,7 @@ namespace MoviesGlobalResources
                      return PrepareResult(_movieCollection.Find(filter2).ToList());
          */
 
-            var filter4 = builder.Gte("release_date", "1989-01-01") & builder.Lte("release_date", "1989-12-31");
+            var filter4 = builder.Gte("release_date", year + "-01-01") & builder.Lte("release_date", year + "-12-31");
             return PrepareResult(_movieCollection.Find(filter4).ToList());
 
             /*var filter = builder.And(builder.Gte("release_date", releaseDateStart),
