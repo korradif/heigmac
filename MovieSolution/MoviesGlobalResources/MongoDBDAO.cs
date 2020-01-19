@@ -53,19 +53,8 @@ namespace MoviesGlobalResources
         internal List<BsonDocument> GetMoviesByYear(int year)
         {
             var builder = Builders<BsonDocument>.Filter;
-            var releaseDateStart = new DateTime(year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            var releaseDateEnd = new DateTime(year, 12, 31, 0, 0, 0, DateTimeKind.Utc);
-
-            /*         var filter2 = builder.Eq("original_language", "en");
-                     return PrepareResult(_movieCollection.Find(filter2).ToList());
-         */
-
-            var filter4 = builder.Gte("release_date", "1989-01-01") & builder.Lte("release_date", "1989-12-31");
-            return PrepareResult(_movieCollection.Find(filter4).ToList());
-
-            /*var filter = builder.And(builder.Gte("release_date", releaseDateStart),
-                                     builder.Lte("release_date", releaseDateEnd));
-            return PrepareResult(_movieCollection.Find(filter).ToList());*/
+            var filter = builder.Gte("release_date", year + "-01-01") & builder.Lte("release_date", year + "-12-31");
+            return PrepareResult(_movieCollection.Find(filter).ToList());
         }
 
         internal List<BsonDocument> GetMoviesByLanguage(string value)

@@ -80,9 +80,9 @@ namespace TestMoviesGlobalResources
         [TestMethod]
         public void TestGetMoviesByFilterGenre() 
         { 
-            var moviesFromApi = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.GENRES, "Action");//Should first casll api
+            var moviesFromApi = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.GENRES, "28");//Should first call api
             Trace.WriteLine(moviesFromApi);
-            var moviesFromCache = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.GENRES, "Action");//Should then use cache
+            var moviesFromCache = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.GENRES, "28");//Should then use cache
             Trace.WriteLine(moviesFromCache);
             int moviesFromApiCount = JsonHelper.GetMoviesJArrayFromRawJson(moviesFromApi).Count;
             int moviesFromCacheCount = JsonHelper.GetMoviesJArrayFromRawJson(moviesFromCache).Count;
@@ -108,8 +108,6 @@ namespace TestMoviesGlobalResources
         [TestMethod]
         public void TestGetMoviesByFilterYear()
         {
-            //use release date
-            
             var moviesFromApi = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.YEAR, "1989");//Should first call api
             Trace.WriteLine(moviesFromApi);
             var moviesFromCache = _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.YEAR, "1989");//Should then use cache
@@ -118,7 +116,7 @@ namespace TestMoviesGlobalResources
             int moviesFromCacheCount = JsonHelper.GetMoviesJArrayFromRawJson(moviesFromCache).Count;
             Trace.WriteLine("movies from Api count:" + moviesFromApiCount);
             Trace.WriteLine("movies from Cache count:" + moviesFromCacheCount);
-            Assert.AreEqual(moviesFromApiCount > 5, moviesFromCacheCount > 5); //this test is not relevant, but the exact count won't be the same as the externe api return movies "around" the provided year
+            Assert.AreEqual(moviesFromApiCount, moviesFromCacheCount); 
             Assert.AreNotEqual(0, moviesFromCacheCount);
             
         }
