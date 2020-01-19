@@ -19,36 +19,43 @@ namespace SocialResources
         
         public void WipeDB()
         {
+            Connect();
             _neo4JDAO.WipeDB();
         }
 
         public void InsertUser(long tId, string username)
         {
+            Connect();
             _neo4JDAO.InsertUser(tId, username);
         }
 
         public void InsertMovie(long mId, string movieName)
         {
+            Connect();
             _neo4JDAO.InsertMovie(mId, movieName);
         }
 
         public List<string> GetFriendTowatchList(string friendUsername)
         {
+            Connect();
             return _neo4JDAO.GetFriendTowatchList(friendUsername);
         }
 
         public double GetAverageRateByMovie(string movieName)
         {
+            Connect();
             return _neo4JDAO.GetAverageRateByMovie(movieName);
         }
 
         public List<string> GetCommentsByMovie(string movieName)
         {
+            Connect();
             return _neo4JDAO.GetCommentsByMovie(movieName);
         }
         
         public List<KeyValuePair<string, Neo4JDAO.RatedMovie>> GetSuggestedMovies(long tId, int depth)
         {
+            Connect();
             // map movies with the class that allow to compute
             // to cumpute ratings at a specific depth value
             var moviesRatings = new Dictionary<string, Neo4JDAO.RatedMovie>();
@@ -81,6 +88,7 @@ namespace SocialResources
 
         public void AddFriend(string username, string friendUsername)
         {
+            Connect();
             if (ensureUserExists(username) && ensureUserExists(friendUsername))
             {
                 _neo4JDAO.UserIsFriendWith(username, friendUsername);
@@ -90,6 +98,7 @@ namespace SocialResources
 
         public void AddToWatch(string username, string movieName)
         {
+            Connect();
             if (ensureUserExists(username) && ensureMovieExists(movieName))
             {
                 _neo4JDAO.UserWillwatchMovie(username, movieName);
@@ -97,6 +106,7 @@ namespace SocialResources
         }
         public void AddRate(string username, string movieName, double rate)
         {
+            Connect();
             if (ensureUserExists(username) && ensureMovieExists(movieName))
             {
                 _neo4JDAO.UserRatesMovie(username, movieName, rate);
@@ -105,6 +115,7 @@ namespace SocialResources
         }
         public void AddComment(string username, string movieName, string comment)
         {
+            Connect();
             if (ensureUserExists(username) && ensureMovieExists(movieName))
             {
                 _neo4JDAO.UserCommentsMovie(username, movieName, comment);
@@ -112,6 +123,7 @@ namespace SocialResources
         }
         private bool ensureUserExists(string username)
         {
+            Connect();
             if (!_neo4JDAO.UserExists(username))
             {
                 _neo4JDAO.InsertUser(0, username);
@@ -120,6 +132,7 @@ namespace SocialResources
         }
         private bool ensureMovieExists(string movieName)
         {
+            Connect();
             if (!_neo4JDAO.MovieExists(movieName))
             {
                 _neo4JDAO.InsertMovie(0, movieName);

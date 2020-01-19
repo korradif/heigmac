@@ -5,19 +5,17 @@ VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSolution", "MovieSolution\MovieSolution.csproj", "{430D738B-6F2E-4B37-B005-4B32366DFE66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTelegramConsumer", "TestTelegramConsumer\TestTelegramConsumer.csproj", "{2AB83466-EB6A-4E44-929B-21C15BA16FFA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Telegram.Bot.Examples.DotNetCoreWebHook", "Telegram.Bot.Examples.DotNetCoreWebHook\Telegram.Bot.Examples.DotNetCoreWebHook.csproj", "{05690039-56FF-4EB4-AB62-FBF2C30FCF72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoviesGlobalResources", "MoviesGlobalResources\MoviesGlobalResources.csproj", "{CBBADBE2-7F7A-4160-93AC-EAA9DE99D8E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoviesGlobalResources", "MoviesGlobalResources\MoviesGlobalResources.csproj", "{CBBADBE2-7F7A-4160-93AC-EAA9DE99D8E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestMoviesGlobalResources", "TestMoviesGlobalResources\TestMoviesGlobalResources.csproj", "{860DEA62-C310-4DF6-9059-872DCE25C185}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestMoviesGlobalResources", "TestMoviesGlobalResources\TestMoviesGlobalResources.csproj", "{860DEA62-C310-4DF6-9059-872DCE25C185}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialResources", "SocialResources\SocialResources.csproj", "{64518B12-5B23-4BEB-8C41-28A35B146F86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialResources", "SocialResources\SocialResources.csproj", "{64518B12-5B23-4BEB-8C41-28A35B146F86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSocialResources", "TestSocialResources\TestSocialResources.csproj", "{92754156-8F10-45EA-9B7C-C418553E3EF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestSocialResources", "TestSocialResources\TestSocialResources.csproj", "{92754156-8F10-45EA-9B7C-C418553E3EF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramConsumer", "TelegramConsumer\TelegramConsumer.csproj", "{EC5FFBE9-8B66-4FDC-BC28-37E0CCA2F2E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramConsumer", "TelegramConsumer\TelegramConsumer.csproj", "{EC5FFBE9-8B66-4FDC-BC28-37E0CCA2F2E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,14 +27,10 @@ Global
 		{430D738B-6F2E-4B37-B005-4B32366DFE66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{430D738B-6F2E-4B37-B005-4B32366DFE66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{430D738B-6F2E-4B37-B005-4B32366DFE66}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2AB83466-EB6A-4E44-929B-21C15BA16FFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2AB83466-EB6A-4E44-929B-21C15BA16FFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2AB83466-EB6A-4E44-929B-21C15BA16FFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2AB83466-EB6A-4E44-929B-21C15BA16FFA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F440DDBA-2957-4C66-8620-EE9546E13E4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F440DDBA-2957-4C66-8620-EE9546E13E4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F440DDBA-2957-4C66-8620-EE9546E13E4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F440DDBA-2957-4C66-8620-EE9546E13E4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05690039-56FF-4EB4-AB62-FBF2C30FCF72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05690039-56FF-4EB4-AB62-FBF2C30FCF72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05690039-56FF-4EB4-AB62-FBF2C30FCF72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05690039-56FF-4EB4-AB62-FBF2C30FCF72}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CBBADBE2-7F7A-4160-93AC-EAA9DE99D8E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CBBADBE2-7F7A-4160-93AC-EAA9DE99D8E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBBADBE2-7F7A-4160-93AC-EAA9DE99D8E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,10 +47,6 @@ Global
 		{92754156-8F10-45EA-9B7C-C418553E3EF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92754156-8F10-45EA-9B7C-C418553E3EF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92754156-8F10-45EA-9B7C-C418553E3EF0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{05690039-56FF-4EB4-AB62-FBF2C30FCF72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05690039-56FF-4EB4-AB62-FBF2C30FCF72}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05690039-56FF-4EB4-AB62-FBF2C30FCF72}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05690039-56FF-4EB4-AB62-FBF2C30FCF72}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EC5FFBE9-8B66-4FDC-BC28-37E0CCA2F2E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC5FFBE9-8B66-4FDC-BC28-37E0CCA2F2E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC5FFBE9-8B66-4FDC-BC28-37E0CCA2F2E1}.Release|Any CPU.ActiveCfg = Release|Any CPU

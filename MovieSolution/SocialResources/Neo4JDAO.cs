@@ -13,8 +13,11 @@ namespace SocialResources
 
         public void Connect()
         {
-            _driver = GraphDatabase.Driver("bolt://localhost:7687", 
-                AuthTokens.Basic("neo4j", "test_pwd"));
+            if (_driver == null)
+            {
+                _driver = GraphDatabase.Driver("bolt://localhost:7687",
+                    AuthTokens.Basic("neo4j", "test_pwd"));
+            }
         }
 
         public void WipeDB()
