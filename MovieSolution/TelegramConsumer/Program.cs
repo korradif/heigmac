@@ -34,8 +34,8 @@ namespace TelegramConsumer
             Bot.OnMessage += BotOnMessageReceived;
             Bot.OnMessageEdited += BotOnMessageReceived;
             Bot.OnCallbackQuery += BotOnCallbackQueryReceived;
-            Bot.OnInlineQuery += BotOnInlineQueryReceived;
-            Bot.OnInlineResultChosen += BotOnChosenInlineResultReceived;
+            //            Bot.OnInlineQuery += BotOnInlineQueryReceived;
+            //            Bot.OnInlineResultChosen += BotOnChosenInlineResultReceived;
             Bot.OnReceiveError += BotOnReceiveError;
 
             Bot.StartReceiving(Array.Empty<UpdateType>());
@@ -66,77 +66,6 @@ namespace TelegramConsumer
                 case "/repo":
                     Bot.SendTextMessageAsync(message.Chat.Id, "https://github.com/korradif/heigmac");
                     break;
-                case "/getMovieByName":
-                    if (arguments.Count >= 2)
-                    {
-
-                        //int id = MovieApi.Movie.GetMovie("name", arguments[1]);
-
-                        string rawJsonMovie = _moviesGlobalResCtl.GetMoviesByName(arguments[1]);
-                        JObject jsonMovie = JObject.Parse(rawJsonMovie);
-                        JArray results = (JArray)jsonMovie.SelectToken("results");
-                        foreach (JToken result in results)
-                        {
-                            string name = (string)result.SelectToken("original_title");
-                        }
-
-                        await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.Typing);
-
-                        //     await Task.Delay(500); // simulate longer running task
-
-                        List<List<InlineKeyboardButton>> keyboardButtonsLines = new List<List<InlineKeyboardButton>>();
-                        for (int i = 0; i < results.Count; )
-                        {
-                            List<InlineKeyboardButton> row = new List<InlineKeyboardButton>();
-                            for (int j = 0; j < 3; ++j, ++i)
-                            {
-                                row.Add(InlineKeyboardButton.WithCallbackData((string)results[i].SelectToken("original_title")));
-                            }
-                            keyboardButtonsLines.Add(row);
-                        }
-                        var inlineKeyboard1 = new InlineKeyboardMarkup(keyboardButtonsLines);
-
-                        await Bot.SendTextMessageAsync(
-                            message.Chat.Id,
-                            "Choose",
-                            replyMarkup: inlineKeyboard1);
-                    }
-                    break;
-                case "/getMovieByCast":
-                    if (arguments.Count >= 2)
-                    {
-                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CAST, arguments[1]));
-                        //MovieApi.Movie.GetMovie("cast", arguments[1]);
-                    }
-                    break;
-                case "/getMovieByCrew":
-                    if (arguments.Count >= 2)
-                    {
-                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.CREW, arguments[1]));
-                        //MovieApi.Movie.GetMovie("crew", arguments[1]);
-                    }
-                    break;
-                case "/getMovieByGenres":
-                    if (arguments.Count >= 2)
-                    {
-                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.GENRES, arguments[1]));
-                        //MovieApi.Movie.GetMovie("genres", arguments[1]);
-                    }
-                    break;
-                case "/getMovieByYear":
-                    if (arguments.Count >= 2)
-                    {
-                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.YEAR, arguments[1]));
-                        //MovieApi.Movie.GetMovie("year", arguments[1]);
-                    }
-                    break;
-                case "/getMovieByLanguage":
-                    if (arguments.Count >= 2)
-                    {
-                        Bot.SendTextMessageAsync(message.Chat.Id, _moviesGlobalResCtl.GetMoviesByFilter(TMDBDAO.Filter.LANGUAGE, arguments[1]));
-                        //MovieApi.Movie.GetMovie("year", arguments[1]);
-                    }
-                    break;
                 case "/addFriend":
                     if (arguments.Count == 2)
                     {
@@ -145,40 +74,11 @@ namespace TelegramConsumer
                     }
                     break;
                 case "/getFriends":
-//                    List<string> friends = _movieController.GetFriends(username);
+                    //                    List<string> friends = _movieController.GetFriends(username);
                     break;
-                case "/rate":
-                    _moviesContext.TryGetValue(message.From.Username, out string movieName);
-                    if (arguments.Count >= 2)
-                    {
-                        bool parsedSucessfully = Double.TryParse(arguments[1].Replace('.', ','), out double rate);
-                        if (parsedSucessfully)
-                        {
-                            Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + rate + " as a mark to " + movieName + " from user " + message.From.Username);
-                            _movieController.AddRate(message.From.Username, movieName, rate);
-                        }
-                        else
-                        {
-                            Bot.SendTextMessageAsync(message.Chat.Id, "Please enter a valid rate");
-                        }
-                    }
-                    break;
-                case "/addComment":
-                    _moviesContext.TryGetValue(message.From.Username, out string movieName2);
-                    string comment = "";
-                    for (int i = 1; i < arguments.Count; ++i) comment += arguments[i];
-                    Bot.SendTextMessageAsync(message.Chat.Id, "Adding " + comment + " as a comment to " + movieName2 + " from user " + message.From.Username);
-                    _movieController.AddComment(message.From.Username, movieName2, comment);
-                    break;
-                case "/Name":
-                    Bot.SendTextMessageAsync(message.Chat.Id, message.Chat.Username);
-                    break;
-                // send inline keyboard
                 case "/getMovie":
                     await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.Typing);
 
-
-                    await Task.Delay(500); // simulate longer running task
                     session.Step = Step.ChooseFilter;
                     var inlineKeyboard = new InlineKeyboardMarkup(new[]
                     {
@@ -201,53 +101,6 @@ namespace TelegramConsumer
                         "Choose",
                         replyMarkup: inlineKeyboard);
                     break;
-
-                // send custom keyboard
-                case "/keyboard":
-                    ReplyKeyboardMarkup ReplyKeyboard = new[]
-                    {
-                        new[] { "1.1", "1.2" },
-                        new[] { "2.1", "2.2" },
-                    };
-
-                    await Bot.SendTextMessageAsync(
-                        message.Chat.Id,
-                        "Choose",
-                        replyMarkup: ReplyKeyboard);
-
-                    break;
-
-                // send a photo
-                case "/photo":
-                    await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.UploadPhoto);
-
-                    const string file = @"Files/tux.png";
-
-                    var fileName = file.Split(Path.DirectorySeparatorChar).Last();
-
-                    /*using (var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    {
-                        await Bot.SendPhotoAsync(
-                            message.Chat.Id,
-                            fileStream,
-                            "Nice Picture");
-                    }*/
-                    break;
-
-                // request location or contact
-                case "/request":
-                    var RequestReplyKeyboard = new ReplyKeyboardMarkup(new[]
-                    {
-                        KeyboardButton.WithRequestLocation("Location"),
-                        KeyboardButton.WithRequestContact("Contact"),
-                    });
-
-                    await Bot.SendTextMessageAsync(
-                        message.Chat.Id,
-                        "Who or Where are you?",
-                        replyMarkup: RequestReplyKeyboard);
-                    break;
-
                 default:
                     switch (session.Step)
                     {
@@ -291,7 +144,6 @@ Usage:
                             break;
                     }
                     break;
-
             }
         }
 
@@ -329,8 +181,6 @@ Usage:
             JArray results = (JArray)jsonMovie.SelectToken("results");
 
             await Bot.SendChatActionAsync(session.Message.Chat.Id, ChatAction.Typing);
-
-            //     await Task.Delay(500); // simulate longer running task
 
             List<List<InlineKeyboardButton>> keyboardButtonsLines = new List<List<InlineKeyboardButton>>();
             for (int i = 0; i < results.Count; ++i)
@@ -393,11 +243,9 @@ Usage:
                                 _movieController.AddToWatch(username, session.SelectedMovie);
                                 break;
                             case "Comment":
-                                //Comment
                                 session.Step = Step.CommentMovie;
                                 break;
                             case "Rate":
-                                //rate
                                 session.Step = Step.RateMovie;
                                 break;
                         }
@@ -406,17 +254,6 @@ Usage:
 
                 }
             }
-            //else
-            //{
-            //    if (_moviesContext.TryGetValue(username, out string value))
-            //    {
-            //        _moviesContext[username] = callbackQuery.Data;
-            //    }
-            //    else
-            //    {
-            //        _moviesContext.Add(username, callbackQuery.Data);
-            //    }
-            //}
             await Bot.SendTextMessageAsync(
                 callbackQuery.Message.Chat.Id,
                 $"{callbackQuery.Data}");
@@ -431,13 +268,12 @@ Usage:
         {
             await Bot.SendChatActionAsync(session.Message.Chat.Id, ChatAction.Typing);
             var genres = _moviesGlobalResCtl.GetMovieGenres();
-            //     await Task.Delay(500); // simulate longer running task
 
             List<List<InlineKeyboardButton>> keyboardButtonsLines = new List<List<InlineKeyboardButton>>();
             for (int i = 0; i < genres.Count;)
             {
                 List<InlineKeyboardButton> row = new List<InlineKeyboardButton>();
-                for (int j = 0; j < 3 && i<genres.Count; ++j, ++i)
+                for (int j = 0; j < 3 && i < genres.Count; ++j, ++i)
                 {
                     row.Add(genres.ElementAt(i).Key);
                 }
@@ -450,14 +286,10 @@ Usage:
                 session.Message.Chat.Id,
                 "Choose",
                 replyMarkup: inlineKeyboard);
-            //session.Step = Step.SelectMovie;
         }
 
         private static async Task getMovieActionChoiceAsync(UserSession session)
         {
-            //AddToWatchList
-            //Comment
-            //Rate
             await Bot.SendChatActionAsync(session.Message.Chat.Id, ChatAction.Typing);
 
             session.Step = Step.ChooseMovieAction;
@@ -475,46 +307,6 @@ Usage:
                 session.Message.Chat.Id,
                 "Choose",
                 replyMarkup: inlineKeyboard);
-        }
-
-        private static async void BotOnInlineQueryReceived(object sender, InlineQueryEventArgs inlineQueryEventArgs)
-        {
-            Console.WriteLine($"Received inline query from: {inlineQueryEventArgs.InlineQuery.From.Id}");
-
-            InlineQueryResultBase[] results = {
-                new InlineQueryResultLocation(
-                    id: "1",
-                    latitude: 40.7058316f,
-                    longitude: -74.2581888f,
-                    title: "New York")   // displayed result
-                    {
-                        InputMessageContent = new InputLocationMessageContent(
-                            latitude: 40.7058316f,
-                            longitude: -74.2581888f)    // message if result is selected
-                    },
-
-                new InlineQueryResultLocation(
-                    id: "2",
-                    latitude: 13.1449577f,
-                    longitude: 52.507629f,
-                    title: "Berlin") // displayed result
-                    {
-                        InputMessageContent = new InputLocationMessageContent(
-                            latitude: 13.1449577f,
-                            longitude: 52.507629f)   // message if result is selected
-                    }
-            };
-
-            await Bot.AnswerInlineQueryAsync(
-                inlineQueryEventArgs.InlineQuery.Id,
-                results,
-                isPersonal: true,
-                cacheTime: 0);
-        }
-
-        private static void BotOnChosenInlineResultReceived(object sender, ChosenInlineResultEventArgs chosenInlineResultEventArgs)
-        {
-            Console.WriteLine($"Received inline result: {chosenInlineResultEventArgs.ChosenInlineResult.ResultId}");
         }
 
         private static void BotOnReceiveError(object sender, ReceiveErrorEventArgs receiveErrorEventArgs)
