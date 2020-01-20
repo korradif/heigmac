@@ -241,7 +241,7 @@ namespace SocialResources
             return ret;
         }
         
-        internal void GetSuggestedMovies(long tId, int depth, Dictionary<string, RatedMovie> moviesRatings)
+        internal void GetSuggestedMovies(long tId, int depth, int maxDepth, Dictionary<string, RatedMovie> moviesRatings)
         {
             if (depth > 0)
             {
@@ -258,7 +258,7 @@ namespace SocialResources
                                                 + (long)friend["b.tId"]
                                                 + " RETURN m.originalTitle, r.rating");
 
-                        GetSuggestedMovies((long)friend["b.tId"], depth - 1, moviesRatings);
+                        GetSuggestedMovies((long)friend["b.tId"], depth - 1, maxDepth, moviesRatings);
 
                         if (movies != null)
                         {
@@ -266,7 +266,7 @@ namespace SocialResources
                             {
                                 if (!moviesRatings.ContainsKey((string) movie["m.originalTitle"]))
                                 {
-                                    moviesRatings.Add((string) movie["m.originalTitle"], new RatedMovie(depth));
+                                    moviesRatings.Add((string) movie["m.originalTitle"], new RatedMovie(maxDepth));
                                 }
 
                                 // Add the rating to the sum
