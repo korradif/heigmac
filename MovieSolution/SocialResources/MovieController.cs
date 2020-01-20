@@ -14,9 +14,9 @@ namespace SocialResources
 
         public void Connect()
         {
-            _neo4JDAO.Connect();    
+            _neo4JDAO.Connect();
         }
-        
+
         public void WipeDB()
         {
             Connect();
@@ -52,7 +52,7 @@ namespace SocialResources
             Connect();
             return _neo4JDAO.GetCommentsByMovie(movieName);
         }
-        
+
         public List<KeyValuePair<string, Neo4JDAO.RatedMovie>> GetSuggestedMovies(long tId, int depth)
         {
             Connect();
@@ -60,7 +60,7 @@ namespace SocialResources
             // to cumpute ratings at a specific depth value
             var moviesRatings = new Dictionary<string, Neo4JDAO.RatedMovie>();
 
-            _neo4JDAO.GetSuggestedMovies(tId, depth, moviesRatings);
+            _neo4JDAO.GetSuggestedMovies(tId, depth, depth, moviesRatings);
 
             foreach (var suggestedMovie in moviesRatings)
             {
@@ -93,7 +93,7 @@ namespace SocialResources
             {
                 _neo4JDAO.UserIsFriendWith(username, friendUsername);
             }
-             
+
         }
 
         public List<string> GetFriends(string username)
@@ -121,7 +121,7 @@ namespace SocialResources
             {
                 _neo4JDAO.UserRatesMovie(username, movieName, rate);
             }
-            
+
         }
         public void AddComment(string username, string movieName, string comment)
         {
@@ -138,7 +138,7 @@ namespace SocialResources
             {
                 _neo4JDAO.InsertUser(0, username);
             }
-            return true;            
+            return true;
         }
         private bool ensureMovieExists(string movieName)
         {
@@ -151,16 +151,48 @@ namespace SocialResources
         }
 
 
-        public void LoadInitialData()
+        public void LoadInitialData(bool isTest)
         {
+            if (isTest)
+            {
+                _neo4JDAO.InsertUser(1, "TestUser1");
+                _neo4JDAO.InsertUser(2, "TestUser2");
+                _neo4JDAO.InsertUser(3, "TestUser3");
+                _neo4JDAO.InsertUser(4, "TestUser4");
+                _neo4JDAO.InsertUser(5, "TestUser5");
+                _neo4JDAO.InsertUser(6, "TestUser6");
+                _neo4JDAO.InsertUser(7, "TestUser7");
+                _neo4JDAO.InsertMovie(100, "FantasticMovie");
+                _neo4JDAO.UserIsFriendWith("TestUser1", "TestUser2");
+                _neo4JDAO.UserIsFriendWith("TestUser2", "TestUser3");
+                _neo4JDAO.UserIsFriendWith("TestUser3", "TestUser4");
+                _neo4JDAO.UserIsFriendWith("TestUser1", "TestUser6");
+                _neo4JDAO.UserIsFriendWith("TestUser6", "TestUser7");
+                _neo4JDAO.UserIsFriendWith("TestUser7", "TestUser5");
 
-            _neo4JDAO.InsertUser(0, "Simmonde");
-            _neo4JDAO.InsertUser(1, "Saumonlecitron");
-            _neo4JDAO.InsertUser(2, "FredericKorradi");
-            _neo4JDAO.UserIsFriendWith("Simmonde", "Saumonlecitron");
-            _neo4JDAO.InsertMovie(0, "Star Wars: The Rise of Skywalker");
-            _neo4JDAO.UserRatesMovie("Simmonde", "Star Wars: The Rise of Skywalker", 2);
-            _neo4JDAO.UserRatesMovie("Saumonlecitron", "Star Wars: The Rise of Skywalker", 2);
+                _neo4JDAO.UserIsFriendWith("TestUser1", "User1");
+                _neo4JDAO.UserIsFriendWith("TestUser1", "User2");
+                _neo4JDAO.UserIsFriendWith("TestUser1", "User3");
+                _neo4JDAO.UserRatesMovie("TestUser2", "FantasticMovie", 2);
+                _neo4JDAO.UserRatesMovie("TestUser3", "FantasticMovie", 3);
+                _neo4JDAO.UserRatesMovie("TestUser4", "FantasticMovie", 7);
+                _neo4JDAO.UserRatesMovie("TestUser5", "FantasticMovie", 1);
+                GetSuggestedMovies(1, 3).ToList().ForEach(x =>
+                    Console.WriteLine(x.Key.ToString() + " : " + x.Value.Score.ToString()));
+            }
+            else
+            {
+                _neo4JDAO.InsertUser(0, "Simmonde");
+                _neo4JDAO.InsertUser(1, "Saumonlecitron");
+                _neo4JDAO.InsertUser(2, "FredericKorradi");
+                _neo4JDAO.UserIsFriendWith("Simmonde", "Saumonlecitron");
+                _neo4JDAO.InsertMovie(0, "Star Wars: The Rise of Skywalker");
+                _neo4JDAO.UserRatesMovie("Simmonde", "Star Wars: The Rise of Skywalker", 2);
+                _neo4JDAO.UserRatesMovie("Saumonlecitron", "Star Wars: The Rise of Skywalker", 2);
+
+            }
+
+
         }
     }
 }

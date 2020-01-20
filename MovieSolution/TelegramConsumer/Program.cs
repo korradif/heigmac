@@ -27,7 +27,8 @@ namespace TelegramConsumer
         {
             _moviesGlobalResCtl.ClearCache();
             _movieController.WipeDB();
-            _movieController.LoadInitialData();
+            _movieController.LoadInitialData(true);//change this to false in order to create an almost empty database.
+                                                         //change this to true to test GetSuggestedMovie() with generated data
             var me = Bot.GetMeAsync().Result;
             Console.Title = me.Username;
 
