@@ -92,7 +92,18 @@ namespace SocialResources
             using (var session = _driver.Session())
             {
                 var result = session.Run("MATCH (u:User) WHERE u.username = '" + username + "' RETURN u.username");
-                return result.Keys.Count != 0;
+                string username2;
+                foreach (var record in result)
+                {
+                     username2 = record["u.username"].ToString();
+                     if (username2 == username)
+                     {
+                         return true;
+                     }
+                }
+
+                return false;
+                //return result.Keys.Count != 0;
             }
         }
         
@@ -102,7 +113,17 @@ namespace SocialResources
             {
                 var result = session.Run("MATCH (m:User) WHERE m.originalTitle = '" + originalTitle + "' RETURN m");
 
-                return result.Keys.Count != 0;
+                string movie;
+                foreach (var record in result)
+                {
+                    movie = record["u.originalTitle"].ToString();
+                    if (movie == originalTitle)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
             }
         }
         
